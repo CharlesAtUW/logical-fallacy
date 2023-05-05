@@ -1,5 +1,5 @@
 from transformers import AutoModelForSequenceClassification, AdamW
-from logicedu import get_logger, MNLIDataset, train, eval1
+from logicedu import get_logger, MNLIDataset, train, eval1, pretty_print_scores, save_metrics_csv
 import argparse
 import pandas as pd
 import torch
@@ -26,6 +26,10 @@ if __name__ == "__main__":
                         default='F')
     parser.add_argument("-c", "--classwise_savepath", help="Path to store classwise results")
     parser.add_argument("-sr", "--result_path", help="Path to store results on dev set")
+    parser.add_argument("-sm", "--metrics_path", help="Path to store metrics on dev set")
+    parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
+    parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
+    parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -58,9 +62,15 @@ if __name__ == "__main__":
     model.eval()
     logger.info("starting testing")
     _, _, test_loader = fallacy_ds.get_data_loaders()
-    scores = eval1(model, test_loader, logger, device)
-    logger.info("micro f1: %f macro f1:%f precision: %f recall: %f exact match %f", scores[4], scores[5], scores[1],
-                scores[2], scores[3])
+    scores = eval1(model, test_loader, logger, device,
+                   threshold_min=float(args.threshold_min),
+                   threshold_max=float(args.threshold_max),
+                   threshold_step=float(args.threshold_step))
+    #logger.info("micro f1: %f macro f1:%f precision: %f recall: %f exact match %f", scores[4], scores[5], scores[1],
+    #            scores[2], scores[3])
+    pretty_print_scores(scores)
+    save_metrics_csv(scores, args.metrics_path)
+
     if args.classwise_savepath is not None:
         classwise_scores = eval_classwise(model, test_loader, logger, fallacy_ds.unique_labels, device)
         df = pd.DataFrame.from_records(classwise_scores, columns=['Fallacy Name', 'Precision', 'Recall', 'F1',

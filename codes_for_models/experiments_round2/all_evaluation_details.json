@@ -1,0 +1,68 @@
+[
+    {
+        "module_name": "logicedu.py",
+        "model_location": "../../saved_models/electra-logic/",
+        "metrics_save_path": "metrics/electra-logic-metrics.csv",
+        "strategy": "1",
+        "map": "base",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "add_nt_arg": true
+    },
+    {
+        "module_name": "logicedu.py",
+        "model_location": "../../saved_models/electra-logic-structaware/",
+        "metrics_save_path": "metrics/electra-logic-structaware-metrics.csv",
+        "strategy": "2",
+        "map": "masked-logical-form",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "add_nt_arg": true
+    },
+    {
+        "module_name": "logicclimate.py",
+        "model_location": "../../saved_models/electra-logic/",
+        "metrics_save_path": "metrics/electra-logic-climatemetrics.csv",
+        "strategy": "1",
+        "map": "base",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "add_nt_arg": false
+    },
+    {
+        "module_name": "logicclimate.py",
+        "model_location": "../../saved_models/electra-logic-structaware/",
+        "metrics_save_path": "metrics/electra-logic-structaware-climatemetrics.csv",
+        "strategy": "2",
+        "map": "masked-logical-form",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "add_nt_arg": false
+    },
+    {
+        "module_name": "logicclimate.py",
+        "model_location": "../../saved_models/electra-logicclimate/",
+        "metrics_save_path": "metrics/electra-logicclimate-climatemetrics.csv",
+        "strategy": "1",
+        "map": "base",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "add_nt_arg": false
+    },
+    {
+        "module_name": "logicclimate.py",
+        "model_location": "../../saved_models/electra-logicclimate-structaware/",
+        "metrics_save_path": "metrics/electra-logicclimate-structaware-climatemetrics.csv",
+        "strategy": "2",
+        "map": "masked-logical-form",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "add_nt_arg": false
+    }
+]

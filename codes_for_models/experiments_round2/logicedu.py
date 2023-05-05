@@ -16,6 +16,7 @@ from random import sample
 from library import eval_classwise, eval_and_store, convert_to_multilabel, get_corefs, replace_masked_tokens, \
     replace_char
 from weighted_cross_entropy import CrossEntropyLoss
+import csv
 
 torch.manual_seed(0)
 
@@ -121,7 +122,11 @@ class MNLIDataset:
                 if strat % 2:
                     data.append(entry)
                 if strat > 1:
-                    entry1 = [replace_masked_tokens(row['masked_articles']), entry[1], entry[2], entry[3]]
+                    # old line: entry1 = [replace_masked_tokens(row['masked_articles']), entry[1], entry[2], entry[3]]
+                    # entry[4] added to fix error with structaware models;
+                    # string-checking added to fix error with structaware models on logicclimate
+                    entry1 = [replace_masked_tokens(row['masked_articles'] if type(row['masked_articles']) == str else ""),
+                              entry[1], entry[2], entry[3], entry[4]]
                     if entry1[0] != entry[0] or strat == 3:
                         data.append(entry1)
 
@@ -289,12 +294,27 @@ def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True):
     for i in range(y_true.shape[0]):
         temp += sum(np.logical_and(y_true[i], y_pred[i])) / sum(np.logical_or(y_true[i], y_pred[i]))
     accuracy = temp / y_true.shape[0]
+    # if np.isnan(accuracy):
+    # print(f"thres: {threshold}----------------------------------")
+    # print(f"logit: {logits}")
+    # print(f"preds: {preds}")
+    # print(f"ytrue: {y_true}")
+    # print(f"yts: {y_true.shape}")
+    # print(f"ypred: {y_pred}")
+    # print(f"syprd: {sum(y_pred)}")
+    # print(f"temp: {temp}")
     precision = sklearn.metrics.precision_score(y_true=y_true, y_pred=y_pred, average='samples', zero_division=0)
     recall = sklearn.metrics.recall_score(y_true=y_true, y_pred=y_pred, average='samples', zero_division=0)
     exact_match = sklearn.metrics.accuracy_score(y_true, y_pred, normalize=True, sample_weight=None)
     micro_f1_score = sklearn.metrics.f1_score(y_true, y_pred, average='micro', zero_division=0)
     macro_f1_score = sklearn.metrics.f1_score(y_true, y_pred, average='macro', zero_division=0)
-    return accuracy, precision, recall, exact_match, micro_f1_score, macro_f1_score
+    return {"threshold": threshold,
+            "micro_f1_score": micro_f1_score,
+            "macro_f1_score": macro_f1_score,
+            "precision": precision,
+            "recall": recall,
+            "exact_match": exact_match,
+            "accuracy": float(accuracy)}
 
 
 def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=0.04, positive_weight=12, debug=False):
@@ -401,12 +421,16 @@ def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=
             break
 
 
-def eval1(model, test_loader, logger, device):
+def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1, threshold_step=.01):
     with torch.no_grad():
         all_preds = []
         all_labels = []
         for batch_idx, (pair_token_ids, mask_ids, seg_ids, y, weights) in enumerate(test_loader):
-            logger.debug("%d", batch_idx)
+            if len(y) != 13:
+                continue
+
+            if batch_idx % 100 == 0:
+                logger.debug("%d", batch_idx)
             pair_token_ids = pair_token_ids.to(device)
             mask_ids = mask_ids.to(device)
             seg_ids = seg_ids.to(device)
@@ -418,14 +442,36 @@ def eval1(model, test_loader, logger, device):
                                       token_type_ids=seg_ids,
                                       attention_mask=mask_ids,
                                       labels=labels).values()
-            all_preds.append(torch.log_softmax(prediction, dim=1).argmax(dim=1))
+            # old line: all_preds.append(torch.log_softmax(prediction, dim=1).argmax(dim=1))
+            # take prediction differences instead of argmax to use thresholds other than .5
+            all_preds.append(prediction[:, 1] - prediction[:, 0])
             all_labels.append(labels)
-        all_preds = 1 - torch.stack(all_preds)
-        all_labels = 1 - torch.stack(all_labels)
-        all_preds[all_preds < 0] = 0
-        all_labels[all_labels < 0] = 0
-        return get_metrics(all_preds, all_labels, sig=False)
+            if 0 in labels:
+                print(labels)
 
+        all_preds = -1 * torch.stack(all_preds)
+        all_labels = 1 - torch.stack(all_labels)
+        all_labels[all_labels < 0] = 0
+
+        thresholds = np.arange(threshold_min, threshold_max, threshold_step)
+
+        metrics = [get_metrics(all_preds, all_labels, threshold=t, sig=True) for t in thresholds]
+        return metrics
+
+
+def pretty_print_scores(scores: list):
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.expand_frame_repr', False)
+    print(pd.DataFrame.from_dict(scores))
+
+
+def save_metrics_csv(scores: list, path: str):
+    if path is not None:
+        with open(path, "w+") as f:
+            writer = csv.DictWriter(f, fieldnames=scores[0].keys())
+            writer.writeheader()
+            writer.writerows(scores)
 
 if __name__ == "__main__":
     if torch.cuda.is_available():
@@ -452,6 +498,10 @@ if __name__ == "__main__":
     parser.add_argument("-sr", "--result_path", help="Path to store results on dev set")
     parser.add_argument("-nt", "--do_not_train", help="Set this to T if you do not wish to train the model",
                         default='F')
+    parser.add_argument("-sm", "--metrics_path", help="Path to store metrics on dev set")
+    parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
+    parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
+    parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -503,9 +553,13 @@ if __name__ == "__main__":
         model.to(device)
     logger.info("starting testing")
     _, _, test_loader = fallacy_ds.get_data_loaders()
-    scores = eval1(model, test_loader, logger, device)
-    logger.info("micro f1: %f macro f1:%f precision: %f recall: %f exact match %f", scores[4], scores[5], scores[1],
-                scores[2], scores[3])
+    scores = eval1(model, test_loader, logger, device,
+                   threshold_min=float(args.threshold_min),
+                   threshold_max=float(args.threshold_max),
+                   threshold_step=float(args.threshold_step))
+    pretty_print_scores(scores)
+    save_metrics_csv(scores, args.metrics_path)
+
     if args.classwise_savepath is not None:
         classwise_scores = eval_classwise(model, test_loader, logger, fallacy_ds.unique_labels, device)
         df = pd.DataFrame.from_records(classwise_scores, columns=['Fallacy Name', 'Precision', 'Recall', 'F1',
