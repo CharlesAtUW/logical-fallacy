@@ -4,12 +4,18 @@
 3. In the `codes_for_models/zeroshot` folder,
     - run `conda env create -f env.yml`.
     - run `pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz --no-deps`
+    - run `pip install matplotlib`
 
 ## Testing with `logicedu.py` and `logicclimate.py`
-In the `codes_for_models/experiments_round2` directory, the `threshold_testing.py` script will test saved models on the Logic and LogicClimate datasets, to try to reproduce the metrics stated in the paper (in Tables 5 and 7, respectively). Running `python threshold_testing.py` will run these evals for various threshold values (in determining if an input has a certain fallacy or not), print metrics for each threshold, and save these metrics to CSV files.
+In the `codes_for_models/experiments_round2` directory, the `threshold_testing.py` script will test saved models on the Logic and LogicClimate datasets, to try to reproduce the metrics stated in the paper (in Tables 5 and 7, respectively). Running `python threshold_testing.py` will run these evals for various threshold values (in determining if an input has a certain fallacy or not), print metrics for each threshold, and save these metrics to CSV files. Running `threshold_graphing.py` will, for each of these evaluations, generate plots of precision-vs.-recall curves for the different threshold values tested.
+
+### Obtaining saved models
+- `threshold_testing.py` uses the saved models that the original repository provides. In the `README.md` file in the `saved_models` folder, download the saved models from the link, put them in the `saved_models` folder, then `unzip` them. The folder names corresponding to the saved models shouldn't have any of the numbers that were in the zip file names (i.e., it should just be "electra-logic", etc.).
+- But, in the `codes_for_models/experiments_round2` folder, folders `raw_labels` and `raw_predictions` have been added, with the generated predictions along with labels used for evaluating the models.
 
 ### Other notes
 - For each input sample into the model, and for each of the 13 fallacies, the model will classify if the sample has the fallacy ("entailment"), doesn't ("contradiction"), or neutral ("neutral"). None of the training examples used in `logicedu.py` have the "neutral" label for any fallacy.
   - This makes the model more like 13 binary classifiers instead of a multi-class classifier.
   - By default, `logicedu.py` can't easily change threshold values (from the "threshold of 0.5") (since for each fallacy, the model outputs three numbers, and makes the classification based on which number is higheset). To be able to change threshold values, we subtract the "contradiction" output number from the "entailment" number. As a consequence, the "neutral" class no longer gets selected.
-- In the dataset used in `logicclimate.py`, for some reason, there is exactly one input sample that doesn't have 13 fallacies associated with it, but only 10. This causes an error to occur in the `eval1` function, so this one example is excluded in our testing.
+- In the dataset used in `logicclimate.py`, for some reason, there is exactly one input sample that doesn't have 13 fallacies associated with it, but only 10. This causes an error to occur in the `eval1` function, so this one example is excluded in our testing. Also, there seems to be one blank "example" each in the train, dev, and test datasets (i.e., line 10 in `data/climate_test_mh.csv`: "`10,10,,[],`") that causes errors in `logicclimate.py`, so that example is also excluded in our testing.
+- A bug has been found where if you run `logicclimate.py` with a model already finetuned on the LogicClimate dataset (i.e. the `--finetune` flag unset/set to `F`), then the test set that the model gets evaluated on is the entire LogicClimate dataset (i.e., the train, dev, and test datasets). This repository has fixed this by adding the `--findtuned_model` flag to have already-finetuned models be evaluated on only the LogicClimate test dataset.
