@@ -86,6 +86,9 @@ class MNLIDataset:
         """
         data = []
         for i, row in df.iterrows():
+            # string-checking added to fix error with climate_*_mh.csv datasets
+            if type(row['masked_articles']) != str:
+                continue
             for label in self.unique_labels:
                 entry = [row['source_article']]
                 if self.map == 'base':
@@ -124,9 +127,7 @@ class MNLIDataset:
                 if strat > 1:
                     # old line: entry1 = [replace_masked_tokens(row['masked_articles']), entry[1], entry[2], entry[3]]
                     # entry[4] added to fix error with structaware models;
-                    # string-checking added to fix error with structaware models on logicclimate
-                    entry1 = [replace_masked_tokens(row['masked_articles'] if type(row['masked_articles']) == str else ""),
-                              entry[1], entry[2], entry[3], entry[4]]
+                    entry1 = [replace_masked_tokens(row['masked_articles']), entry[1], entry[2], entry[3], entry[4]]
                     if entry1[0] != entry[0] or strat == 3:
                         data.append(entry1)
 
@@ -421,42 +422,61 @@ def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=
             break
 
 
-def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1, threshold_step=.01):
+def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1, threshold_step=.01,
+          predictions_filename=None, labels_filename=None):
     with torch.no_grad():
-        all_preds = []
-        all_labels = []
-        for batch_idx, (pair_token_ids, mask_ids, seg_ids, y, weights) in enumerate(test_loader):
-            if len(y) != 13:
-                continue
+        preds_stacked = None
+        labels_stacked = None
 
-            if batch_idx % 100 == 0:
-                logger.debug("%d", batch_idx)
-            pair_token_ids = pair_token_ids.to(device)
-            mask_ids = mask_ids.to(device)
-            seg_ids = seg_ids.to(device)
-            labels = y.to(device)
-            if model == "random":
-                prediction = torch.rand([15, 3])
-            else:
-                _, prediction = model(pair_token_ids,
-                                      token_type_ids=seg_ids,
-                                      attention_mask=mask_ids,
-                                      labels=labels).values()
-            # old line: all_preds.append(torch.log_softmax(prediction, dim=1).argmax(dim=1))
-            # take prediction differences instead of argmax to use thresholds other than .5
-            all_preds.append(prediction[:, 1] - prediction[:, 0])
-            all_labels.append(labels)
-            if 0 in labels:
-                print(labels)
+        if predictions_filename is not None and labels_filename is not None\
+            and os.path.exists(predictions_filename) and os.path.exists(labels_filename):
+            preds_stacked = torch.load(predictions_filename)
+            labels_stacked = torch.load(labels_filename)
+        else:
+            all_preds = []
+            all_labels = []
+            for batch_idx, (pair_token_ids, mask_ids, seg_ids, y, weights) in enumerate(test_loader):
+                if len(y) != 13:
+                    continue
 
-        all_preds = -1 * torch.stack(all_preds)
-        all_labels = 1 - torch.stack(all_labels)
-        all_labels[all_labels < 0] = 0
+                if batch_idx % 100 == 0:
+                    logger.debug("%d", batch_idx)
+                pair_token_ids = pair_token_ids.to(device)
+                mask_ids = mask_ids.to(device)
+                seg_ids = seg_ids.to(device)
+                labels = y.to(device)
+                if model == "random":
+                    prediction = torch.rand([15, 3])
+                else:
+                    _, prediction = model(pair_token_ids,
+                                        token_type_ids=seg_ids,
+                                        attention_mask=mask_ids,
+                                        labels=labels).values()
+                # old line: all_preds.append(torch.log_softmax(prediction, dim=1).argmax(dim=1))
+                # take prediction differences instead of argmax to use thresholds other than .5
+                all_preds.append(prediction[:, 1] - prediction[:, 0])
+                all_labels.append(labels)
+
+            preds_stacked = -1 * torch.stack(all_preds)
+            labels_stacked = 1 - torch.stack(all_labels)
+            labels_stacked[labels_stacked < 0] = 0
+
+            save_raw_predictions(preds_stacked, labels_stacked, predictions_filename, labels_filename)
 
         thresholds = np.arange(threshold_min, threshold_max, threshold_step)
 
-        metrics = [get_metrics(all_preds, all_labels, threshold=t, sig=True) for t in thresholds]
+        metrics = [get_metrics(preds_stacked, labels_stacked, threshold=t, sig=True) for t in thresholds]
         return metrics
+    
+
+def save_raw_predictions(predictions: torch.Tensor,
+                         labels: torch.Tensor,
+                         predictions_filename: str,
+                         labels_filename: str):
+    if predictions_filename is not None:
+        torch.save(predictions, predictions_filename)
+    if labels_filename is not None:
+        torch.save(labels, labels_filename)
 
 
 def pretty_print_scores(scores: list):
@@ -502,6 +522,8 @@ if __name__ == "__main__":
     parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
     parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
     parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
+    parser.add_argument("-sp", "--save_predictions", help="Save raw predictions to this file")
+    parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -556,7 +578,9 @@ if __name__ == "__main__":
     scores = eval1(model, test_loader, logger, device,
                    threshold_min=float(args.threshold_min),
                    threshold_max=float(args.threshold_max),
-                   threshold_step=float(args.threshold_step))
+                   threshold_step=float(args.threshold_step),
+                   predictions_filename=args.save_predictions,
+                   labels_filename=args.save_labels)
     pretty_print_scores(scores)
     save_metrics_csv(scores, args.metrics_path)
 

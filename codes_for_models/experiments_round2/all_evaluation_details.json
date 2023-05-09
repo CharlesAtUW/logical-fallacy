@@ -1,6 +1,7 @@
 [
     {
         "module_name": "logicedu.py",
+        "name": "Electra model on Logic dataset",
         "model_location": "../../saved_models/electra-logic/",
         "metrics_save_path": "metrics/electra-logic-metrics.csv",
         "strategy": "1",
@@ -8,10 +9,22 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
-        "add_nt_arg": true
+        "save_predictions": "raw_predictions/electra-logic-preds",
+        "save_labels": "raw_labels/electra-logic-labels",
+        "add_nt_arg": true,
+        "add_fm_arg": false,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.5331,
+                "precision": 0.5159,
+                "recall": 0.7233,
+                "exact_match": 0.3566
+            }
+        ]
     },
     {
         "module_name": "logicedu.py",
+        "name": "Electra-Structaware model on Logic dataset",
         "model_location": "../../saved_models/electra-logic-structaware/",
         "metrics_save_path": "metrics/electra-logic-structaware-metrics.csv",
         "strategy": "2",
@@ -19,10 +32,22 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
-        "add_nt_arg": true
+        "save_predictions": "raw_predictions/electra-logic-structaware-preds",
+        "save_labels": "raw_labels/electra-logic-structaware-labels",
+        "add_nt_arg": true,
+        "add_fm_arg": false,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.5877,
+                "precision": 0.5525,
+                "recall": 0.6367,
+                "exact_match": 0.4767
+            }
+        ]
     },
     {
         "module_name": "logicclimate.py",
+        "name": "Electra model on LogicClimate dataset",
         "model_location": "../../saved_models/electra-logic/",
         "metrics_save_path": "metrics/electra-logic-climatemetrics.csv",
         "strategy": "1",
@@ -30,10 +55,21 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
-        "add_nt_arg": false
+        "save_predictions": "raw_predictions/electra-logic-climatepreds",
+        "save_labels": "raw_labels/electra-logic-climatelabels",
+        "add_nt_arg": false,
+        "add_fm_arg": false,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2272,
+                "precision": 0.1868,
+                "recall": 0.3585
+            }
+        ]
     },
     {
         "module_name": "logicclimate.py",
+        "name": "Electra-Structaware model on LogicClimate dataset",
         "model_location": "../../saved_models/electra-logic-structaware/",
         "metrics_save_path": "metrics/electra-logic-structaware-climatemetrics.csv",
         "strategy": "2",
@@ -41,10 +77,21 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
-        "add_nt_arg": false
+        "save_predictions": "raw_predictions/electra-logic-structaware-climatepreds",
+        "save_labels": "raw_labels/electra-logic-structaware-climatelabels",
+        "add_nt_arg": false,
+        "add_fm_arg": false,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2723,
+                "precision": 0.2046,
+                "recall": 0.4512
+            }
+        ]
     },
     {
         "module_name": "logicclimate.py",
+        "name": "Electra model (finetuned on LogicClimate) on LogicClimate dataset",
         "model_location": "../../saved_models/electra-logicclimate/",
         "metrics_save_path": "metrics/electra-logicclimate-climatemetrics.csv",
         "strategy": "1",
@@ -52,10 +99,21 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
-        "add_nt_arg": false
+        "save_predictions": "raw_predictions/electra-logicclimate-climatepreds",
+        "save_labels": "raw_labels/electra-logicclimate-climatelabels",
+        "add_nt_arg": false,
+        "add_fm_arg": true,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2371,
+                "precision": 0.2086,
+                "recall": 0.2309
+            }
+        ]
     },
     {
         "module_name": "logicclimate.py",
+        "name": "Electra-Structaware model (finetuned on LogicClimate) on LogicClimate dataset",
         "model_location": "../../saved_models/electra-logicclimate-structaware/",
         "metrics_save_path": "metrics/electra-logicclimate-structaware-climatemetrics.csv",
         "strategy": "2",
@@ -63,6 +121,16 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
-        "add_nt_arg": false
+        "save_predictions": "raw_predictions/electra-logicclimate-structaware-climatepreds",
+        "save_labels": "raw_labels/electra-logicclimate-structaware-climatelabels",
+        "add_nt_arg": false,
+        "add_fm_arg": true,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2937,
+                "precision": 0.1766,
+                "recall": 0.6722
+            }
+        ]
     }
 ]

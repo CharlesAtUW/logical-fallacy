@@ -15,7 +15,9 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
                         "-sm", details["metrics_save_path"],
                         "-tmin", details["threshold_min"],
                         "-tmax", details["threshold_max"],
-                        "-tstep", details["threshold_step"]]
+                        "-tstep", details["threshold_step"],
+                        "-sp", details["save_predictions"],
+                        "-sl", details["save_labels"]]
         if details["add_nt_arg"]:
              command_args += ["-nt", "T"]
         completed_process = subprocess.run(command_args, capture_output=True)

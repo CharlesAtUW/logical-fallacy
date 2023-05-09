@@ -30,6 +30,8 @@ if __name__ == "__main__":
     parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
     parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
     parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
+    parser.add_argument("-sp", "--save_predictions", help="Save raw predictions to this file")
+    parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -65,7 +67,9 @@ if __name__ == "__main__":
     scores = eval1(model, test_loader, logger, device,
                    threshold_min=float(args.threshold_min),
                    threshold_max=float(args.threshold_max),
-                   threshold_step=float(args.threshold_step))
+                   threshold_step=float(args.threshold_step),
+                   predictions_filename=args.save_predictions,
+                   labels_filename=args.save_labels)
     #logger.info("micro f1: %f macro f1:%f precision: %f recall: %f exact match %f", scores[4], scores[5], scores[1],
     #            scores[2], scores[3])
     pretty_print_scores(scores)
