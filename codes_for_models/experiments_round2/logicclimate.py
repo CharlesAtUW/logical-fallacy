@@ -30,6 +30,8 @@ if __name__ == "__main__":
     parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
     parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
     parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
+    parser.add_argument("-fm", "--finetuned_model", help="Set this flag if the model was finetuned on LogicClimate",
+                        default='F')
     parser.add_argument("-sp", "--save_predictions", help="Save raw predictions to this file")
     parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
     args = parser.parse_args()
@@ -46,7 +48,7 @@ if __name__ == "__main__":
     fallacy_train['logical_fallacies'] = fallacy_train['logical_fallacies'].apply(eval)
     fallacy_dev['logical_fallacies'] = fallacy_dev['logical_fallacies'].apply(eval)
     fallacy_test['logical_fallacies'] = fallacy_test['logical_fallacies'].apply(eval)
-    if args.finetune == 'F':
+    if args.finetune == 'F' and args.finetuned_model == 'F':
         fallacy_test = pd.concat([fallacy_train, fallacy_dev, fallacy_test])
     fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'logical_fallacies', args.map, fallacy_test,
                              fallacy=True, train_strat=int(args.train_strat), test_strat=int(args.dev_strat),

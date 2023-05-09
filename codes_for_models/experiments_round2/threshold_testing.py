@@ -20,6 +20,8 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
                         "-sl", details["save_labels"]]
         if details["add_nt_arg"]:
              command_args += ["-nt", "T"]
+        if details["add_fm_arg"]:
+             command_args += ["-fm", "T"]
         completed_process = subprocess.run(command_args, capture_output=True)
 
         if print_stdout:
