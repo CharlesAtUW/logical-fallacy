@@ -1,7 +1,8 @@
 [
     {
         "module_name": "logicedu.py",
-        "name": "Electra model on Logic dataset",
+        "name": "Electra eval'd on Logic dataset",
+        "plot_save_path": "plots/electra-on-logic.png",
         "model_location": "../../saved_models/electra-logic/",
         "metrics_save_path": "metrics/electra-logic-metrics.csv",
         "strategy": "1",
@@ -64,7 +65,8 @@
     },
     {
         "module_name": "logicclimate.py",
-        "name": "Electra model on LogicClimate dataset",
+        "name": "Electra eval'd on LogicClimate dataset",
+        "plot_save_path": "plots/electra-on-logicclimate.png",
         "model_location": "../../saved_models/electra-logic/",
         "metrics_save_path": "metrics/electra-logic-climatemetrics.csv",
         "strategy": "1",
@@ -125,7 +127,8 @@
     },
     {
         "module_name": "logicclimate.py",
-        "name": "Electra model (finetuned on LogicClimate) on LogicClimate dataset",
+        "name": "Electra (finetuned on LogicClimate) eval'd on LogicClimate dataset",
+        "plot_save_path": "plots/electra-ftolc-on-logicclimate.png",
         "model_location": "../../saved_models/electra-logicclimate/",
         "metrics_save_path": "metrics/electra-logicclimate-climatemetrics.csv",
         "strategy": "1",
@@ -147,7 +150,8 @@
     },
     {
         "module_name": "logicclimate.py",
-        "name": "Electra-Structaware model (finetuned on LogicClimate) on LogicClimate dataset",
+        "name": "Electra-Structaware (finetuned on LogicClimate) eval'd on LogicClimate dataset",
+        "plot_save_path": "plots/electra-structaware-ftolc-on-logicclimate.png",
         "model_location": "../../saved_models/electra-logicclimate-structaware/",
         "metrics_save_path": "metrics/electra-logicclimate-structaware-climatemetrics.csv",
         "strategy": "2",
@@ -155,6 +159,29 @@
         "threshold_min": "0.01",
         "threshold_max": "1",
         "threshold_step": "0.01",
+        "save_predictions": "raw_predictions/electra-logicclimate-structaware-climatepreds",
+        "save_labels": "raw_labels/electra-logicclimate-structaware-climatelabels",
+        "add_nt_arg": false,
+        "add_fm_arg": true,
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2937,
+                "precision": 0.1766,
+                "recall": 0.6722
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "name": "Electra-Structaware (finetuned on LogicClimate) eval'd on LogicClimate (more precision)",
+        "plot_save_path": "plots/electra-structaware-ftolc-on-logicclimate-precise.png",
+        "model_location": "../../saved_models/electra-logicclimate-structaware/",
+        "metrics_save_path": "metrics/electra-logicclimate-structaware-climatemetrics-precise.csv",
+        "strategy": "2",
+        "map": "masked-logical-form",
+        "threshold_min": "0.306",
+        "threshold_max": "0.338",
+        "threshold_step": "0.0005",
         "save_predictions": "raw_predictions/electra-logicclimate-structaware-climatepreds",
         "save_labels": "raw_labels/electra-logicclimate-structaware-climatelabels",
         "add_nt_arg": false,
