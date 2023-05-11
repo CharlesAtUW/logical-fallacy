@@ -34,6 +34,8 @@ if __name__ == "__main__":
                         default='F')
     parser.add_argument("-sp", "--save_predictions", help="Save raw predictions to this file")
     parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
+    parser.add_argument("-ed", "--eval_dataset", help="Dataset to use when running evals. Can be \"train\", \"dev\", or \"test\".",
+                        default="test")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -50,7 +52,8 @@ if __name__ == "__main__":
     fallacy_test['logical_fallacies'] = fallacy_test['logical_fallacies'].apply(eval)
     if args.finetune == 'F' and args.finetuned_model == 'F':
         fallacy_test = pd.concat([fallacy_train, fallacy_dev, fallacy_test])
-    fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'logical_fallacies', args.map, fallacy_test,
+    test_datasets = {"train": fallacy_train, "dev": fallacy_dev, "test": fallacy_test}
+    fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'logical_fallacies', args.map, test_datasets[args.eval_dataset],
                              fallacy=True, train_strat=int(args.train_strat), test_strat=int(args.dev_strat),
                              multilabel=True)
     model.resize_token_embeddings(len(fallacy_ds.tokenizer))

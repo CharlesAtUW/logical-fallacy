@@ -429,8 +429,7 @@ def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1
         preds_stacked = None
         labels_stacked = None
 
-        if predictions_filename is not None and labels_filename is not None\
-            and os.path.exists(predictions_filename) and os.path.exists(labels_filename):
+        if predictions_already_saved(predictions_filename, labels_filename):
             preds_stacked = torch.load(predictions_filename)
             labels_stacked = torch.load(labels_filename)
         else:
@@ -468,6 +467,11 @@ def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1
 
         metrics = [get_metrics(preds_stacked, labels_stacked, threshold=t, sig=True) for t in thresholds]
         return metrics
+    
+
+def predictions_already_saved(predictions_filename: str, labels_filename: str) -> bool:
+    return predictions_filename is not None and labels_filename is not None\
+            and os.path.exists(predictions_filename) and os.path.exists(labels_filename)
     
 
 def save_raw_predictions(predictions: torch.Tensor,
@@ -525,6 +529,8 @@ if __name__ == "__main__":
     parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
     parser.add_argument("-sp", "--save_predictions", help="Save raw predictions to this file")
     parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
+    parser.add_argument("-ed", "--eval_dataset", help="Dataset to use when running evals. Can be \"train\", \"dev\", or \"test\".",
+                        default="test")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -559,7 +565,8 @@ if __name__ == "__main__":
         fallacy_train = fallacy_train[:747]
     fallacy_dev = pd.read_csv('../../data/edu_dev.csv')
     fallacy_test = pd.read_csv('../../data/edu_test.csv')
-    fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'updated_label', args.map, fallacy_test,
+    test_datasets = {"train": fallacy_train, "dev": fallacy_dev, "test": fallacy_test}
+    fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'updated_label', args.map, test_datasets[args.eval_dataset],
                              fallacy=True, train_strat=int(args.train_strat), test_strat=int(args.dev_strat))
     model.resize_token_embeddings(len(fallacy_ds.tokenizer))
     fallacy_ds.train_df.to_csv('processed_train_df.csv')
