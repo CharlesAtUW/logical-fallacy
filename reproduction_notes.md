@@ -2,12 +2,11 @@
 1. Install Python. Version 3.9.2 is used.
 2. Install Conda. Steps can be found in the "Install Conda" section of https://docs.google.com/document/d/1iuG6dNRAuhOU7K2ZeLNzIaV1w2InvMGq6VazBzZKFu4/.
 3. In the `codes_for_models/zeroshot` folder,
-    - run `conda env create -f env.yml`.
+    - run `conda env create -f env.yml`. (`env.yml` is based on the repo's original `env.yml`, but with matplotlib and more recent scipy)
     - run `pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz --no-deps`
-    - run `pip install matplotlib`
 
 ## Testing with `logicedu.py` and `logicclimate.py`
-In the `codes_for_models/experiments_round2` directory, the `threshold_testing.py` script will test saved models on the Logic and LogicClimate datasets, to try to reproduce the metrics stated in the paper (in Tables 5 and 7, respectively). Running `python threshold_testing.py` will run these evals for various threshold values (in determining if an input has a certain fallacy or not), print metrics for each threshold, and save these metrics to CSV files. Running `threshold_graphing.py` will, for each of these evaluations, generate plots of precision-vs.-recall curves for the different threshold values tested.
+In the `codes_for_models/experiments_round2` directory, the `threshold_testing.py` script will test saved models on the Logic and LogicClimate datasets, to try to reproduce the metrics stated in the paper (in Tables 5 and 7, respectively). Running `python threshold_testing.py` will run these evals for various threshold values (in determining if an input has a certain fallacy or not), print metrics for each threshold, and save these metrics to CSV files. It will also save raw predictions and labels, so that they don't have to be computed every time. Running `threshold_graphing.py` will, for each of these evaluations, generate plots of precision-vs.-recall curves for the different threshold values tested. Running `calibration_graphing.py` will, for each of the evaluations, generate calibration curves to see if the models are well-calibrated.
 
 ### Obtaining saved models
 - `threshold_testing.py` uses the saved models that the original repository provides. In the `README.md` file in the `saved_models` folder, download the saved models from the link, put them in the `saved_models` folder, then `unzip` them. The folder names corresponding to the saved models shouldn't have any of the numbers that were in the zip file names (i.e., it should just be "electra-logic", etc.).
