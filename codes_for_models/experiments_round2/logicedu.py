@@ -21,6 +21,9 @@ import os
 
 torch.manual_seed(0)
 
+FALLACIES = ('appeal to emotion', 'false causality', 'ad populum', 'circular reasoning', 'fallacy of relevance',
+            'faulty generalization', 'ad hominem', 'fallacy of extension', 'equivocation', 'fallacy of logic',
+            'fallacy of credibility', 'intentional', 'false dilemma')
 
 def get_unique_labels(df, label_col_name, multilabel=False):
     labels_dict = {}
@@ -278,7 +281,7 @@ def multi_acc(y_pred, y_test, flip=True):
 import time
 
 
-def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True):
+def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True, pr_averages="samples"):
     if sig:
         sig = nn.Sigmoid()
         preds = sig(logits)
@@ -305,8 +308,8 @@ def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True):
     # print(f"ypred: {y_pred}")
     # print(f"syprd: {sum(y_pred)}")
     # print(f"temp: {temp}")
-    precision = sklearn.metrics.precision_score(y_true=y_true, y_pred=y_pred, average='samples', zero_division=0)
-    recall = sklearn.metrics.recall_score(y_true=y_true, y_pred=y_pred, average='samples', zero_division=0)
+    precision = sklearn.metrics.precision_score(y_true=y_true, y_pred=y_pred, average=pr_averages, zero_division=0)
+    recall = sklearn.metrics.recall_score(y_true=y_true, y_pred=y_pred, average=pr_averages, zero_division=0)
     exact_match = sklearn.metrics.accuracy_score(y_true, y_pred, normalize=True, sample_weight=None)
     micro_f1_score = sklearn.metrics.f1_score(y_true, y_pred, average='micro', zero_division=0)
     macro_f1_score = sklearn.metrics.f1_score(y_true, y_pred, average='macro', zero_division=0)
@@ -424,7 +427,7 @@ def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=
 
 
 def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1, threshold_step=.01,
-          predictions_filename=None, labels_filename=None):
+          predictions_filename=None, labels_filename=None, by_fallacy=False):
     with torch.no_grad():
         preds_stacked = None
         labels_stacked = None
@@ -465,7 +468,15 @@ def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1
 
         thresholds = np.arange(threshold_min, threshold_max, threshold_step)
 
-        metrics = [get_metrics(preds_stacked, labels_stacked, threshold=t, sig=True) for t in thresholds]
+        metrics = None
+        if by_fallacy:
+
+            metrics = {}
+            for i, fallacy in enumerate(FALLACIES):
+                metrics[fallacy] = [get_metrics(preds_stacked[:, i].view((1, -1)), labels_stacked[:, i].view((1, -1)),
+                                                threshold=t, sig=True, pr_averages="micro") for t in thresholds]
+        else:
+            metrics = [get_metrics(preds_stacked, labels_stacked, threshold=t, sig=True) for t in thresholds]
         return metrics
     
 
@@ -493,6 +504,8 @@ def pretty_print_scores(scores: list):
 
 def save_metrics_csv(scores: list, path: str):
     if path is not None:
+        if not os.path.exists(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
         with open(path, "w+") as f:
             writer = csv.DictWriter(f, fieldnames=scores[0].keys())
             writer.writeheader()
@@ -523,7 +536,7 @@ if __name__ == "__main__":
     parser.add_argument("-sr", "--result_path", help="Path to store results on dev set")
     parser.add_argument("-nt", "--do_not_train", help="Set this to T if you do not wish to train the model",
                         default='F')
-    parser.add_argument("-sm", "--metrics_path", help="Path to store metrics on dev set")
+    parser.add_argument("-sm", "--metrics_path", help="Path to store metrics on test set. Directory name if -bf is \"T\", filename otherwise")
     parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
     parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
     parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
@@ -531,12 +544,16 @@ if __name__ == "__main__":
     parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
     parser.add_argument("-ed", "--eval_dataset", help="Dataset to use when running evals. Can be \"train\", \"dev\", or \"test\".",
                         default="test")
+    parser.add_argument("-bf", "--by_fallacy", help="Set to true to separate evals by fallacy", default="F")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
-    logger.info("initializing model")
-    model = AutoModelForSequenceClassification.from_pretrained(args.model, num_labels=3)
-    model.to(device)
+    make_dataset = not predictions_already_saved(args.save_predictions, args.save_labels)
+    model = None
+    if make_dataset:
+        logger.info("initializing model")
+        model = AutoModelForSequenceClassification.from_pretrained(args.model, num_labels=3)
+        model.to(device)
 
     if args.finetune == 'T':
         logger.info("initializing mnli dataset")
@@ -558,19 +575,21 @@ if __name__ == "__main__":
         logger.info("reinit model")
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath2)
         model.to(device)
-    optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
-    logger.info("creating dataset")
-    fallacy_train = pd.read_csv('../../data/edu_train.csv')
-    if args.downsample == 'T':
-        fallacy_train = fallacy_train[:747]
-    fallacy_dev = pd.read_csv('../../data/edu_dev.csv')
-    fallacy_test = pd.read_csv('../../data/edu_test.csv')
-    test_datasets = {"train": fallacy_train, "dev": fallacy_dev, "test": fallacy_test}
-    fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'updated_label', args.map, test_datasets[args.eval_dataset],
-                             fallacy=True, train_strat=int(args.train_strat), test_strat=int(args.dev_strat))
-    model.resize_token_embeddings(len(fallacy_ds.tokenizer))
-    fallacy_ds.train_df.to_csv('processed_train_df.csv')
-    fallacy_ds.val_df.to_csv('processed_val_df.csv')
+    optimizer, fallacy_ds = None, None
+    if make_dataset:
+        optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
+        logger.info("creating dataset")
+        fallacy_train = pd.read_csv('../../data/edu_train.csv')
+        if args.downsample == 'T':
+            fallacy_train = fallacy_train[:747]
+        fallacy_dev = pd.read_csv('../../data/edu_dev.csv')
+        fallacy_test = pd.read_csv('../../data/edu_test.csv')
+        test_datasets = {"train": fallacy_train, "dev": fallacy_dev, "test": fallacy_test}
+        fallacy_ds = MNLIDataset(args.tokenizer, fallacy_train, fallacy_dev, 'updated_label', args.map, test_datasets[args.eval_dataset],
+                                fallacy=True, train_strat=int(args.train_strat), test_strat=int(args.dev_strat))
+        model.resize_token_embeddings(len(fallacy_ds.tokenizer))
+        fallacy_ds.train_df.to_csv('processed_train_df.csv')
+        fallacy_ds.val_df.to_csv('processed_val_df.csv')
     # print(fallacy_ds.tokenizer.tokenize("[A] causes [B]"))
     # print("checking length", len(fallacy_ds.tokenizer), model.config.vocab_size)
     if args.do_not_train == 'F':
@@ -582,15 +601,24 @@ if __name__ == "__main__":
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath, num_labels=3)
         model.to(device)
     logger.info("starting testing")
-    _, _, test_loader = fallacy_ds.get_data_loaders()
+    test_loader = None
+    if make_dataset:
+        _, _, test_loader = fallacy_ds.get_data_loaders()
     scores = eval1(model, test_loader, logger, device,
                    threshold_min=float(args.threshold_min),
                    threshold_max=float(args.threshold_max),
                    threshold_step=float(args.threshold_step),
                    predictions_filename=args.save_predictions,
-                   labels_filename=args.save_labels)
-    pretty_print_scores(scores)
-    save_metrics_csv(scores, args.metrics_path)
+                   labels_filename=args.save_labels,
+                   by_fallacy=args.by_fallacy == "T")
+    if args.by_fallacy == "T":
+        for fallacy in FALLACIES:
+            print(fallacy)
+            pretty_print_scores(scores[fallacy])
+            save_metrics_csv(scores[fallacy], os.path.join(args.metrics_path, fallacy.replace(" ", "_") + ".csv"))
+    else:
+        pretty_print_scores(scores)
+        save_metrics_csv(scores, args.metrics_path)
 
     if args.classwise_savepath is not None:
         classwise_scores = eval_classwise(model, test_loader, logger, fallacy_ds.unique_labels, device)

@@ -9,6 +9,7 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
         name = details["name"]
         print(name)
 
+        metrics_save_name = filename_util.metrics_fn(name)
         command_args = ["python",
                         details["module_name"],
                         "-t", "google/electra-large-discriminator",
@@ -16,18 +17,23 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
                         "-ts", details["strategy"],
                         "-ds", details["strategy"],
                         "-mp", details["map"],
-                        "-sm", filename_util.metrics_fn(name),
                         "-tmin", details["threshold_min"],
                         "-tmax", details["threshold_max"],
                         "-tstep", details["threshold_step"],
                         "-sp", filename_util.raw_pred_fn(name),
                         "-sl", filename_util.labels_fn(name)]
-        if details["add_nt_arg"]:
-             command_args += ["-nt", "T"]
-        if details["add_fm_arg"]:
-             command_args += ["-fm", "T"]
-        if details.get("ed_arg", False):
-             command_args += ["-ed", details["ed_arg"]]
+        if "do_not_train_arg" in details:
+             command_args += ["-nt", details["do_not_train_arg"]]
+        if "finetuned_model_arg" in details:
+             command_args += ["-fm", details["finetuned_model_arg"]]
+        if "eval_dataset_arg" in details:
+             command_args += ["-ed", details["eval_dataset_arg"]]
+        if "by_fallacy_arg" in details:
+             command_args += ["-bf", details["by_fallacy_arg"]]
+             if details["by_fallacy_arg"] == "T":
+                  metrics_save_name = filename_util.metrics_by_fallacy_dn(name)
+        command_args += ["-sm", metrics_save_name]
+
         completed_process = subprocess.run(command_args, capture_output=True)
 
         if print_stdout:
@@ -42,7 +48,8 @@ def main():
         all_eval_details = json.load(json_file)
     
     for ed in all_eval_details:
-        perform_evaluation(ed)
+        if "by-fallacy" in ed["name"]:
+            perform_evaluation(ed, print_stderr=True)
 
 if __name__ == "__main__":
     main()

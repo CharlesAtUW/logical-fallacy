@@ -3,6 +3,8 @@ import json
 import matplotlib.pyplot as plt
 import filename_util
 
+from logicedu import FALLACIES
+
 EVAL_DETAILS_FILENAME = "all_evaluation_details.json"
 
 def plot_histogram(raw_predictions: torch.Tensor,
@@ -24,10 +26,14 @@ def plot_histogram(raw_predictions: torch.Tensor,
     if show:
         plt.show()
     plt.savefig(save_path)
+    plt.close()
 
 
-def get_usable_tensor(filename: str):
-    return torch.flatten(torch.load(filename)).cpu()
+def get_usable_tensor(filename: str, column=None):
+    usable_tensor = torch.load(filename).cpu()
+    if column is not None:
+        usable_tensor = usable_tensor[:, column]
+    return torch.flatten(usable_tensor)
 
 
 def main():
@@ -37,11 +43,19 @@ def main():
 
     for ed in all_eval_details:
         name = ed["name"]
-        plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(name)),
-                       ed["histogram"]["bins"],
-                       tuple(ed["histogram"]["range"]),
-                       ed["title"],
-                       filename_util.histogram_fn(name))
+        if ed.get("by_fallacy_arg", "F") == "T":
+            for i, fallacy in enumerate(FALLACIES):
+                plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(name), column=i),
+                            ed["histogram"]["bins"],
+                            tuple(ed["histogram"]["range"]),
+                            ed["title"],
+                            filename_util.histogram_by_fallacy_fn(name, fallacy.replace(" ", "_"), create_dirs=True))
+        else:
+            plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(name)),
+                        ed["histogram"]["bins"],
+                        tuple(ed["histogram"]["range"]),
+                        ed["title"],
+                        filename_util.histogram_fn(name))
 
 
 if __name__ == "__main__":
