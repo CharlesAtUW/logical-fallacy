@@ -26,7 +26,7 @@ def plot_histogram(raw_predictions: torch.Tensor,
     if show:
         plt.show()
     plt.savefig(save_path)
-    plt.close()
+    plt.clf()
 
 
 def get_usable_tensor(filename: str, column=None):
@@ -36,26 +36,39 @@ def get_usable_tensor(filename: str, column=None):
     return torch.flatten(usable_tensor)
 
 
+def fallacy_to_name_in_files(fallacy: str):
+    return fallacy.replace(" ", "_")
+
+
+def add_fallacy_to_title(title: str, fallacy: str):
+    return f"{title} ({fallacy})"
+
+
 def main():
     all_eval_details = None
     with open(EVAL_DETAILS_FILENAME, "r") as f:
         all_eval_details = json.load(f)
 
     for ed in all_eval_details:
-        name = ed["name"]
+        eval_name = ed["name"]
+        title = ed["title"]
+        num_bins = ed["histogram"]["bins"]
+        histogram_range = tuple(ed["histogram"]["range"])
+
         if ed.get("by_fallacy_arg", "F") == "T":
             for i, fallacy in enumerate(FALLACIES):
-                plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(name), column=i),
-                            ed["histogram"]["bins"],
-                            tuple(ed["histogram"]["range"]),
-                            ed["title"],
-                            filename_util.histogram_by_fallacy_fn(name, fallacy.replace(" ", "_"), create_dirs=True))
+                converted_fallacy = fallacy_to_name_in_files(fallacy)
+                plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(eval_name), column=i),
+                            num_bins,
+                            histogram_range,
+                            add_fallacy_to_title(title, fallacy),
+                            filename_util.histogram_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True))
         else:
-            plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(name)),
-                        ed["histogram"]["bins"],
-                        tuple(ed["histogram"]["range"]),
-                        ed["title"],
-                        filename_util.histogram_fn(name))
+            plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(eval_name)),
+                        num_bins,
+                        histogram_range,
+                        title,
+                        filename_util.histogram_fn(eval_name))
 
 
 if __name__ == "__main__":

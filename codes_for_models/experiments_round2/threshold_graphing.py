@@ -5,14 +5,17 @@ import filename_util
 
 from typing import List
 
+from histogram_graphing import fallacy_to_name_in_files, add_fallacy_to_title
+
 from logicedu import FALLACIES
 
 EVAL_DETAILS_FILENAME = "all_evaluation_details.json"
 
-def graph_precision_recall_curve(eval_details: dict, metrics: pd.DataFrame,
-                                 additional_points: list, save_path: str, show: bool = False):
-    results_title = eval_details["title"]
-
+def graph_precision_recall_curve(metrics: pd.DataFrame,
+                                 additional_points: list,
+                                 save_path: str,
+                                 results_title: str,
+                                 show: bool = False):
     thresholds = metrics["threshold"].to_numpy()
     precisions = metrics["precision"].to_numpy()
     recalls = metrics["recall"].to_numpy()
@@ -30,14 +33,17 @@ def graph_precision_recall_curve(eval_details: dict, metrics: pd.DataFrame,
 
     plt.xlabel("Recall")
     plt.ylabel("Precision")
-    plt.legend((main_scatter, additional_scatter), ("Model's metrics", "Paper's metrics"))
+    if len(additional_precisions) == 0:
+        plt.legend((main_scatter,), ("Model's metrics",))
+    else:
+        plt.legend((main_scatter, additional_scatter), ("Model's metrics", "Paper's metrics"))
     plt.suptitle(f"Precision vs. recall (for various thresholds)", fontsize=18)
     plt.title(results_title, fontsize=10)
     
     if show:
         plt.show()
     plt.savefig(save_path)
-    plt.close()
+    plt.clf()
 
 
 def main():
@@ -46,14 +52,23 @@ def main():
         all_eval_details = json.load(json_file)
 
     for ed in all_eval_details:
+        eval_name = ed["name"]
+        title = ed["title"]
+
         if ed.get("by_fallacy_arg", "F") == "T":
             for fallacy in FALLACIES:
-                metrics = pd.read_csv(filename_util.metrics_by_fallacy_fn(ed["name"], fallacy.replace(" ", "_"), create_dirs=True))
-                graph_precision_recall_curve(ed, metrics, ed.get("additional_points", {}).get(fallacy, []),
-                                             filename_util.plots_by_fallacy_fn(ed["name"], fallacy.replace(" ", "_"), create_dirs=True))
+                converted_fallacy = fallacy_to_name_in_files(fallacy)
+                metrics = pd.read_csv(filename_util.metrics_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True))
+                graph_precision_recall_curve(metrics,
+                                             ed.get("additional_points", {}).get(fallacy, []),
+                                             filename_util.plots_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True),
+                                             add_fallacy_to_title(title, fallacy))
         else:
-            metrics = pd.read_csv(filename_util.metrics_fn(ed["name"]))
-            graph_precision_recall_curve(ed, metrics, ed.get("additional_points", []), filename_util.plots_fn(ed["name"]))
+            metrics = pd.read_csv(filename_util.metrics_fn(eval_name))
+            graph_precision_recall_curve(metrics,
+                                         ed.get("additional_points", []),
+                                         filename_util.plots_fn(eval_name),
+                                         title)
 
 
 if __name__ == "__main__":
