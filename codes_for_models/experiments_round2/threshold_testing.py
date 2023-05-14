@@ -48,8 +48,7 @@ def main():
         all_eval_details = json.load(json_file)
     
     for ed in all_eval_details:
-        if "by-fallacy" in ed["name"]:
-            perform_evaluation(ed, print_stderr=True)
+        perform_evaluation(ed, print_stderr=True)
 
 if __name__ == "__main__":
     main()
