@@ -62,7 +62,7 @@ if __name__ == "__main__":
     if args.finetune == 'T':
         logger.info("starting training")
         train(model, fallacy_ds, optimizer, logger, args.savepath, device, ratio=1, epochs=100,
-              positive_weight=float(args.weight))
+              positive_weight=float(args.weight) if args.weight is not None else None)
 
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath, num_labels=3)
         model.to(device)

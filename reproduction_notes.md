@@ -8,9 +8,21 @@
 ## Testing with `logicedu.py` and `logicclimate.py`
 In the `codes_for_models/experiments_round2` directory, the `threshold_testing.py` script will test saved models on the Logic and LogicClimate datasets, to try to reproduce the metrics stated in the paper (in Tables 5 and 7, respectively). Running `python threshold_testing.py` will run these evals for various threshold values (in determining if an input has a certain fallacy or not), print metrics for each threshold, and save these metrics to CSV files. It will also save raw predictions and labels, so that they don't have to be computed every time. Running `threshold_graphing.py` will, for each of these evaluations, generate plots of precision-vs.-recall curves for the different threshold values tested. Running `calibration_graphing.py` will, for each of the evaluations, generate calibration curves to see if the model is well-calibrated. Running `histogram_graphing.py` will, for each of these evaluations, generate histograms detailing the distributions of the (sigmoid) outputs of the model. The plots of `threshold_graphing.py`, `calibration_graphing.py`, and `histogram_graphing.py` are saved respectively in the `plots`, `calibration_plots`, and `distributions` folders in `codes_for_models/experiments_round2`.
 
+By default, these scripts will use details in `evaluation_details/authors_saved.json` located in the same folder as the scripts. A different filename can be passed in as the first command-line argument into these scripts, and they will perform different evaluations:
+- `evaluation_details/`
+  - `authors_saved.json`: These will use the paper's authors' saved models. See "Obtaining saved models" to get those models in the right place for `threshold_testing.py` to use properly.
+  - `authors_saved_by_fallacy.json`: These will perform some of the evaluations from `authors_saved.json`, except splitting up the evaluations by fallacy.
+  - `authors_saved_eval_on_train.json`: These will perform some of the evaluations from `authors_saved.json`, except evaluating on the respective training dataset instead of the test set.
+  - `small_retrained.json`: These will use the models retrained from `electra-small-mnli`. See the filenames under the `training_details/` for getting the retrained models.
+- `training_details/` (these are only meant to be passed into `threshold_testing.py`):
+  - `train_electra_small_mnli_on_logic.json`: pass this file in to train a fresh `electra-small-mnli` model on the Logic dataset. See "Obtaining `electra-small-mnli` models for retraining" to get the fresh `electra-small-mnli` in the right place for `threshold_testing.py` to use properly.
+  - `finetune_trained_electra_small_logic_on_logicclimate.json`: pass this file in to finetune the models trained from `train_electra_small_mnli_on_logic.json`on the LogicClimate dataset.
 ### Obtaining saved models
 - `threshold_testing.py` uses the saved models that the original repository provides. In the `README.md` file in the `saved_models` folder, download the saved models from the link, put them in the `saved_models` folder, then `unzip` them. The folder names corresponding to the saved models shouldn't have any of the numbers that were in the zip file names (i.e., it should just be "electra-logic", etc.).
 - But, in the `codes_for_models/experiments_round2` folder, folders `raw_labels` and `raw_predictions` have been added, with the generated predictions along with labels used for evaluating the models. So, the saved models don't have to be downloaded if you're not doing re-evaluations of them.
+
+#### Obtaining `electra-small-mnli` models for retraining
+To put the `electra-small-mnli` pretrained model in the correct place, run the `obtain_pretrained_seq_cls.py` script in `codes_for_models/experiments_round2`. This script saves a pretrained sequence classification model from `transformers`. The model name is passed in as the first command line argument, but the default is "`howey/electra-small-mnli`", the model this section concerns.
 
 ### Other notes
 - For each input sample into the model, and for each of the 13 fallacies, the model will classify if the sample has the fallacy ("entailment"), doesn't ("contradiction"), or neutral ("neutral"). None of the training examples used in `logicedu.py` have the "neutral" label for any fallacy.

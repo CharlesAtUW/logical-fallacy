@@ -548,7 +548,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
-    make_dataset = not predictions_already_saved(args.save_predictions, args.save_labels)
+    make_dataset = args.do_not_train == "F" or not predictions_already_saved(args.save_predictions, args.save_labels)
     model = None
     if make_dataset:
         logger.info("initializing model")
@@ -596,7 +596,7 @@ if __name__ == "__main__":
         optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
         logger.info("starting training")
         train(model, fallacy_ds, optimizer, logger, args.savepath, device, ratio=1, epochs=10,
-              positive_weight=int(args.weight))
+              positive_weight=int(args.weight) if args.weight is not None else None)
 
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath, num_labels=3)
         model.to(device)
