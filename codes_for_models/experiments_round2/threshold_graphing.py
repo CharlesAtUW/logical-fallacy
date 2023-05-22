@@ -2,14 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import filename_util
+import sys
 
 from typing import List
 
 from histogram_graphing import fallacy_to_name_in_files, add_fallacy_to_title
 
 from logicedu import FALLACIES
-
-EVAL_DETAILS_FILENAME = "all_evaluation_details.json"
+from threshold_testing import DEFAULT_EVAL_DETAILS_FILENAME
 
 def graph_precision_recall_curve(metrics: pd.DataFrame,
                                  additional_points: list,
@@ -46,9 +46,9 @@ def graph_precision_recall_curve(metrics: pd.DataFrame,
     plt.clf()
 
 
-def main():
+def do_threshold_graphing(eval_details_filename: str):
     all_eval_details = None
-    with open(EVAL_DETAILS_FILENAME, "r") as json_file:
+    with open(eval_details_filename, "r") as json_file:
         all_eval_details = json.load(json_file)
 
     for ed in all_eval_details:
@@ -72,4 +72,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    eval_file = sys.argv[1] if len(sys.argv) >= 2 else DEFAULT_EVAL_DETAILS_FILENAME
+    do_threshold_graphing(eval_file)

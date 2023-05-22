@@ -1,0 +1,47 @@
+[
+    {
+        "module_name": "logicedu.py",
+        "title": "Electra eval'd on Logic dataset by fallacy",
+        "name": "electra-on-logic-by-fallacy",
+        "calibration": {"num_buckets": 10},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "model_location": "../../saved_models/electra-logic/",
+        "strategy": "1",
+        "map": "base",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "do_not_train_arg": "T",
+        "by_fallacy_arg": "T"
+    },
+    {
+        "module_name": "logicedu.py",
+        "title": "Electra-Structaware eval'd on Logic dataset by fallacy",
+        "name": "electra-structaware-on-logic-by-fallacy",
+        "calibration": {"num_buckets": 10},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "model_location": "../../saved_models/electra-logic-structaware/",
+        "strategy": "2",
+        "map": "masked-logical-form",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "do_not_train_arg": "T",
+        "by_fallacy_arg": "T",
+        "additional_points": {
+            "appeal to emotion": [{"micro_f1_score": 0.5000, "precision": 0.4800, "recall": 0.5217}],
+            "false causality": [{"micro_f1_score": 0.5882, "precision": 0.6250, "recall": 0.5556}],
+            "ad populum": [{"micro_f1_score": 0.7945, "precision": 0.6744, "recall": 0.9667}],
+            "circular reasoning": [{"micro_f1_score": 0.4643, "precision": 0.3514, "recall": 0.6842}],
+            "fallacy of relevance": [{"micro_f1_score": 0.3922, "precision": 0.3704, "recall": 0.4167}],
+            "faulty generalization": [{"micro_f1_score": 0.6024, "precision": 0.4762, "recall": 0.8197}],
+            "ad hominem": [{"micro_f1_score": 0.7865, "precision": 0.7292, "recall": 0.8537}],
+            "fallacy of extension": [{"micro_f1_score": 0.4918, "precision": 0.3750, "recall": 0.7143}],
+            "equivocation": [{"micro_f1_score": 0.3333, "precision": 0.10000, "recall": 0.2000}],
+            "fallacy of logic": [{"micro_f1_score": 0.2581, "precision": 0.1667, "recall": 0.5714}],
+            "fallacy of credibility": [{"micro_f1_score": 0.5882, "precision": 0.5882, "recall": 0.5882}],
+            "intentional": [{"micro_f1_score": 0.2623, "precision": 0.1739, "recall": 0.5333}],
+            "false dilemma": [{"micro_f1_score": 0.5500, "precision": 0.3929, "recall": 0.9167}]
+        }
+    }
+]

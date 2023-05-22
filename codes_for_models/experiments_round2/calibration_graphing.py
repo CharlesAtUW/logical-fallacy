@@ -2,12 +2,12 @@ import torch
 import json
 import matplotlib.pyplot as plt
 import filename_util
+import sys
 
 from logicedu import FALLACIES
 from sklearn.calibration import CalibrationDisplay
 from histogram_graphing import get_usable_tensor, fallacy_to_name_in_files
-
-EVAL_DETAILS_FILENAME = "all_evaluation_details.json"
+from threshold_testing import DEFAULT_EVAL_DETAILS_FILENAME
 
 def plot_calibration_curve(raw_predictions: torch.Tensor, labels: torch.Tensor, save_path: str, num_buckets: int):
     y_prob = torch.sigmoid(raw_predictions)
@@ -18,9 +18,9 @@ def plot_calibration_curve(raw_predictions: torch.Tensor, labels: torch.Tensor, 
     plt.clf()
 
 
-def main():
+def do_calibration_graphing(eval_details_filename: str):
     all_eval_details = None
-    with open(EVAL_DETAILS_FILENAME, "r") as f:
+    with open(eval_details_filename, "r") as f:
         all_eval_details = json.load(f)
 
     for ed in all_eval_details:
@@ -44,4 +44,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    eval_file = sys.argv[1] if len(sys.argv) >= 2 else DEFAULT_EVAL_DETAILS_FILENAME
+    do_calibration_graphing(eval_file)

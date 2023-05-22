@@ -1,0 +1,69 @@
+[
+    {
+        "module_name": "logicedu.py",
+        "title": "Electra-Structaware eval'd on Logic train dataset",
+        "name": "electra-structaware-on-logic-train",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "model_location": "../../saved_models/electra-logic-structaware/",
+        "strategy": "2",
+        "map": "masked-logical-form",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "do_not_train_arg": "T",
+        "eval_dataset_arg": "train",
+        "additional_points": [
+            {
+                "micro_f1_score": 0.5877,
+                "precision": 0.5525,
+                "recall": 0.6367,
+                "exact_match": 0.4767
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Structaware (finetuned on LogicClimate) eval'd on LogicClimate train dataset",
+        "name": "electra-structaware-ftolc-on-logicclimate-train",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "model_location": "../../saved_models/electra-logicclimate-structaware/",
+        "strategy": "3",
+        "map": "masked-logical-form",
+        "threshold_min": "0.01",
+        "threshold_max": "1",
+        "threshold_step": "0.01",
+        "finetuned_model_arg": "T",
+        "eval_dataset_arg": "train",
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2937,
+                "precision": 0.1766,
+                "recall": 0.6722
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Structaware (f.t.'d on LogicClimate) eval'd on LogicClimate train (more precision)",
+        "name": "electra-structaware-ftolc-on-logicclimate-train-precise",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0.306, 0.338]},
+        "model_location": "../../saved_models/electra-logicclimate-structaware/",
+        "strategy": "3",
+        "map": "masked-logical-form",
+        "threshold_min": "0.306",
+        "threshold_max": "0.338",
+        "threshold_step": "0.0005",
+        "finetuned_model_arg": "T",
+        "eval_dataset_arg": "train",
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2937,
+                "precision": 0.1766,
+                "recall": 0.6722
+            }
+        ]
+    }
+]

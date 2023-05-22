@@ -2,10 +2,10 @@ import torch
 import json
 import matplotlib.pyplot as plt
 import filename_util
+import sys
 
 from logicedu import FALLACIES
-
-EVAL_DETAILS_FILENAME = "all_evaluation_details.json"
+from threshold_testing import DEFAULT_EVAL_DETAILS_FILENAME
 
 def plot_histogram(raw_predictions: torch.Tensor,
                    num_bins: int,
@@ -44,9 +44,9 @@ def add_fallacy_to_title(title: str, fallacy: str):
     return f"{title} ({fallacy})"
 
 
-def main():
+def do_histogram_graphing(eval_details_filename):
     all_eval_details = None
-    with open(EVAL_DETAILS_FILENAME, "r") as f:
+    with open(eval_details_filename, "r") as f:
         all_eval_details = json.load(f)
 
     for ed in all_eval_details:
@@ -72,4 +72,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    eval_file = sys.argv[1] if len(sys.argv) >= 2 else DEFAULT_EVAL_DETAILS_FILENAME
+    do_histogram_graphing(eval_file)

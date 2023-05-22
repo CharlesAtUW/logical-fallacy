@@ -1,8 +1,9 @@
 import subprocess
 import json
 import filename_util
+import sys
 
-EVAL_DETAILS_FILENAME = "all_evaluation_details.json"
+DEFAULT_EVAL_DETAILS_FILENAME = "evaluation_details/authors_saved.json"
 
 def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
         print(f"evaluating model at {details['model_location']} on module {details['module_name']}:")
@@ -24,6 +25,8 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
                         "-sl", filename_util.labels_fn(name)]
         if "do_not_train_arg" in details:
              command_args += ["-nt", details["do_not_train_arg"]]
+        if "finetune_arg" in details:
+             command_args += ["-f", details["finetune_arg"]]
         if "finetuned_model_arg" in details:
              command_args += ["-fm", details["finetuned_model_arg"]]
         if "eval_dataset_arg" in details:
@@ -32,6 +35,8 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
              command_args += ["-bf", details["by_fallacy_arg"]]
              if details["by_fallacy_arg"] == "T":
                   metrics_save_name = filename_util.metrics_by_fallacy_dn(name)
+        if "savepath_arg" in details:
+             command_args += ["-s", details["savepath_arg"]]
         command_args += ["-sm", metrics_save_name]
 
         completed_process = subprocess.run(command_args, capture_output=True)
@@ -42,13 +47,14 @@ def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
             print(f"stderr:\n{completed_process.stderr.decode('utf-8')}")
 
 
-def main():
+def do_threshold_testing(eval_details_filename: str):
     all_eval_details = None
-    with open(EVAL_DETAILS_FILENAME, "r") as json_file:
+    with open(eval_details_filename, "r") as json_file:
         all_eval_details = json.load(json_file)
     
     for ed in all_eval_details:
         perform_evaluation(ed, print_stderr=True)
 
 if __name__ == "__main__":
-    main()
+    eval_file = sys.argv[1] if len(sys.argv) >= 2 else DEFAULT_EVAL_DETAILS_FILENAME
+    do_threshold_testing(eval_file)
