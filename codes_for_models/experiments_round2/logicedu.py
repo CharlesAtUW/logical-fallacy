@@ -281,7 +281,7 @@ def multi_acc(y_pred, y_test, flip=True):
 import time
 
 
-def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True, pr_averages="samples"):
+def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True, pr_averaging="samples"):
     if sig:
         sig = nn.Sigmoid()
         preds = sig(logits)
@@ -308,8 +308,8 @@ def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True, pr_averag
     # print(f"ypred: {y_pred}")
     # print(f"syprd: {sum(y_pred)}")
     # print(f"temp: {temp}")
-    precision = sklearn.metrics.precision_score(y_true=y_true, y_pred=y_pred, average=pr_averages, zero_division=0)
-    recall = sklearn.metrics.recall_score(y_true=y_true, y_pred=y_pred, average=pr_averages, zero_division=0)
+    precision = sklearn.metrics.precision_score(y_true=y_true, y_pred=y_pred, average=pr_averaging, zero_division=0)
+    recall = sklearn.metrics.recall_score(y_true=y_true, y_pred=y_pred, average=pr_averaging, zero_division=0)
     exact_match = sklearn.metrics.accuracy_score(y_true, y_pred, normalize=True, sample_weight=None)
     micro_f1_score = sklearn.metrics.f1_score(y_true, y_pred, average='micro', zero_division=0)
     macro_f1_score = sklearn.metrics.f1_score(y_true, y_pred, average='macro', zero_division=0)
@@ -428,7 +428,7 @@ def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=
 
 
 def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1, threshold_step=.01,
-          predictions_filename=None, labels_filename=None, by_fallacy=False):
+          predictions_filename=None, labels_filename=None, by_fallacy=False, pr_averaging="samples"):
     with torch.no_grad():
         preds_stacked = None
         labels_stacked = None
@@ -475,9 +475,9 @@ def eval1(model, test_loader, logger, device, threshold_min=.01, threshold_max=1
             metrics = {}
             for i, fallacy in enumerate(FALLACIES):
                 metrics[fallacy] = [get_metrics(preds_stacked[:, i].view((1, -1)), labels_stacked[:, i].view((1, -1)),
-                                                threshold=t, sig=True, pr_averages="micro") for t in thresholds]
+                                                threshold=t, sig=True, pr_averaging="micro") for t in thresholds]
         else:
-            metrics = [get_metrics(preds_stacked, labels_stacked, threshold=t, sig=True) for t in thresholds]
+            metrics = [get_metrics(preds_stacked, labels_stacked, threshold=t, pr_averaging=pr_averaging, sig=True) for t in thresholds]
         return metrics
     
 
@@ -552,6 +552,7 @@ if __name__ == "__main__":
     parser.add_argument("-esf", "--early_stopping_ft", help="When finetuning, stop when an epoch is worse than the previous",
                         default="T")
     parser.add_argument("-nef", "--num_epochs_ft", help="Number of epochs when finetuning", default="10")
+    parser.add_argument("-pra", "--precision_recall_averaging", help="Averaging method for calculating precision and recall", default="samples")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -619,7 +620,8 @@ if __name__ == "__main__":
                    threshold_step=float(args.threshold_step),
                    predictions_filename=args.save_predictions,
                    labels_filename=args.save_labels,
-                   by_fallacy=args.by_fallacy == "T")
+                   by_fallacy=args.by_fallacy == "T",
+                   pr_averaging=args.precision_recall_averaging)
     if args.by_fallacy == "T":
         for fallacy in FALLACIES:
             print(fallacy)

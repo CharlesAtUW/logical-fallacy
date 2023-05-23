@@ -1,0 +1,177 @@
+[
+    {
+        "module_name": "logicedu.py",
+        "title": "Electra eval'd on Logic dataset (microavg)",
+        "name": "electra-on-logic-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.5331,
+                "precision": 0.5159,
+                "recall": 0.7233,
+                "exact_match": 0.3566
+            }
+        ]
+    },
+    {
+        "module_name": "logicedu.py",
+        "title": "Electra-Structaware eval'd on Logic dataset (microavg)",
+        "name": "electra-structaware-on-logic-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.5877,
+                "precision": 0.5525,
+                "recall": 0.6367,
+                "exact_match": 0.4767
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra eval'd on LogicClimate dataset (microavg)",
+        "name": "electra-on-logicclimate-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2272,
+                "precision": 0.1868,
+                "recall": 0.3585
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Structaware eval'd on LogicClimate dataset (microavg)",
+        "name": "electra-structaware-on-logicclimate-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2723,
+                "precision": 0.2046,
+                "recall": 0.4512
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra (f.t.'d on L.Climate) eval'd on L.Climate dataset (microavg)",
+        "name": "electra-ftolc-on-logicclimate-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetuned_model": "T",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2371,
+                "precision": 0.2086,
+                "recall": 0.2309
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Structaware (f.t.'d on L.Climate) eval'd on L.Climate dataset (microavg)",
+        "name": "electra-structaware-ftolc-on-logicclimate-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetuned_model": "T",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2937,
+                "precision": 0.1766,
+                "recall": 0.6722
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Structaware (f.t.'d on L.Climate) eval'd on L.Climate (more precision) (microavg)",
+        "name": "electra-structaware-ftolc-on-logicclimate-precise-microavg",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0.306, 0.338]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.306",
+            "--threshold_max": "0.338",
+            "--threshold_step": "0.0005",
+            "--finetuned_model": "T",
+            "--precision_recall_averaging": "micro"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2937,
+                "precision": 0.1766,
+                "recall": 0.6722
+            }
+        ]
+    }
+]

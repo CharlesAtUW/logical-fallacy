@@ -41,6 +41,7 @@ if __name__ == "__main__":
     parser.add_argument("-esf", "--early_stopping_ft", help="When finetuning, stop when an epoch is worse than the previous",
                         default="T")
     parser.add_argument("-nef", "--num_epochs_ft", help="Number of epochs when finetuning", default="10")
+    parser.add_argument("-pra", "--precision_recall_averaging", help="Averaging method for calculating precision and recall", default="samples")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -81,7 +82,8 @@ if __name__ == "__main__":
                    threshold_step=float(args.threshold_step),
                    predictions_filename=args.save_predictions,
                    labels_filename=args.save_labels,
-                   by_fallacy=args.by_fallacy == "T")
+                   by_fallacy=args.by_fallacy == "T",
+                   pr_averaging=args.precision_recall_averaging)
     #logger.info("micro f1: %f macro f1:%f precision: %f recall: %f exact match %f", scores[4], scores[5], scores[1],
     #            scores[2], scores[3])
     if args.by_fallacy == "T":

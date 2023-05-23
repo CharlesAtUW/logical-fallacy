@@ -13,15 +13,19 @@ By default, these scripts will use details in `evaluation_details/authors_saved.
   - `authors_saved.json`: These will use the paper's authors' saved models. See "Obtaining saved models" to get those models in the right place for `threshold_testing.py` to use properly.
   - `authors_saved_by_fallacy.json`: These will perform some of the evaluations from `authors_saved.json`, except splitting up the evaluations by fallacy.
   - `authors_saved_eval_on_train.json`: These will perform some of the evaluations from `authors_saved.json`, except evaluating on the respective training dataset instead of the test set.
-  - `small_retrained.json`: These will use the models retrained from `electra-small-mnli`. See the filenames under the `training_details/` for getting the retrained models.
+  - `authors_saved_microavg.json`: These will perform the same evaluations as `authors_saved.json`, except precisions and recalls are calculated using "micro" averaging instead of "samples" averaging. See [here](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html) for more details about these averaging types.
+  - `small_retrained.json`: These will use the models retrained from `electra-small-mnli`. See the filenames `train_electra_small_mnli_on_logic.json` and `finetune_trained_electra_small_logic_on_logicclimate.json` under the `training_details/` bullet point for getting the retrained models.
+  - `small_20epochs_retrained.json`: These will use the models retrained from `electra-small-mnli` that took the best of 20 epochs instead of doing early stopping. See the filenames `train_electra_small_mnli_on_logic_20epochs.json` and `finetune_trained_electra_small_logic_on_logicclimate_20epochs.json` under the `training_details/` bullet point for getting the retrained models.
 - `training_details/` (these are only meant to be passed into `threshold_testing.py`):
   - `train_electra_small_mnli_on_logic.json`: pass this file in to train a fresh `electra-small-mnli` model on the Logic dataset. See "Obtaining `electra-small-mnli` models for retraining" to get the fresh `electra-small-mnli` in the right place for `threshold_testing.py` to use properly.
+  - `train_electra_small_mnli_on_logic.json`: pass this file in to train a fresh `electra-small-mnli` model on the Logic dataset. This training takes the best of 20 epochs instead of doing early stopping.
   - `finetune_trained_electra_small_logic_on_logicclimate.json`: pass this file in to finetune the models trained from `train_electra_small_mnli_on_logic.json`on the LogicClimate dataset.
+  - `finetune_trained_electra_small_logic_on_logicclimate_20epochs.json`: pass this file in to finetune the models trained from `train_electra_small_mnli_on_logic.json` on the LogicClimate dataset. This finetuning takes the best of 20 epochs instead of doing early stopping.
 ### Obtaining saved models
 - `threshold_testing.py` uses the saved models that the original repository provides. In the `README.md` file in the `saved_models` folder, download the saved models from the link, put them in the `saved_models` folder, then `unzip` them. The folder names corresponding to the saved models shouldn't have any of the numbers that were in the zip file names (i.e., it should just be "electra-logic", etc.).
 - But, in the `codes_for_models/experiments_round2` folder, folders `raw_labels` and `raw_predictions` have been added, with the generated predictions along with labels used for evaluating the models. So, the saved models don't have to be downloaded if you're not doing re-evaluations of them.
 
-#### Obtaining `electra-small-mnli` models for retraining
+#### Obtaining a `electra-small-mnli` model for retraining
 To put the `electra-small-mnli` pretrained model in the correct place, run the `obtain_pretrained_seq_cls.py` script in `codes_for_models/experiments_round2`. This script saves a pretrained sequence classification model from `transformers`. The model name is passed in as the first command line argument, but the default is "`howey/electra-small-mnli`", the model this section concerns.
 
 ### Other notes
