@@ -1,0 +1,56 @@
+[
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Small finetuning on LogicClimate dataset (20 epochs)",
+        "name": "electra-small-ftolc-20epochs-on-logicclimate",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-logic-20epochs/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetune": "T",
+            "--savepath": "../../saved_models/electra-small-logicclimate-20epochs",
+            "--num_epochs": "20",
+            "--early_stopping_ft": "F"
+        }
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Small-StructAware finetuning on LogicClimate dataset (20 epochs)",
+        "name": "electra-small-structaware-ftolc-20epochs-on-logicclimate",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-logic-structaware-20epochs/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetune": "T",
+            "--savepath": "../../saved_models/electra-small-logicclimate-structaware-20epochs/",
+            "--num_epochs": "20",
+            "--early_stopping_ft": "F"
+        }
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra-Small-StructAware finetuning on LogicClimate dataset (20 epochs, ts3)",
+        "name": "electra-small-structaware-ftolc-20epochs-ts3-on-logicclimate",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-logic-structaware-20epochs/",
+            "--train_strat": "3",
+            "--dev_strat": "3",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetune": "T",
+            "--savepath": "../../saved_models/electra-small-logicclimate-structaware-20epochs-ts3/",
+            "--num_epochs": "20",
+            "--early_stopping_ft": "F"
+        }
+    }
+]

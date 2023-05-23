@@ -51,5 +51,23 @@
             "intentional": [{"micro_f1_score": 0.2623, "precision": 0.1739, "recall": 0.5333}],
             "false dilemma": [{"micro_f1_score": 0.5500, "precision": 0.3929, "recall": 0.9167}]
         }
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Electra eval'd on LogicClimate dataset by fallacy",
+        "name": "electra-on-logicclimate-by-fallacy",
+        "calibration": {"num_buckets": 10},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--by_fallacy": "T"
+        },
+        "split_by_fallacy": true
     }
 ]

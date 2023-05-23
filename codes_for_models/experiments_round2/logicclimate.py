@@ -1,8 +1,9 @@
 from transformers import AutoModelForSequenceClassification, AdamW
-from logicedu import get_logger, MNLIDataset, train, eval1, pretty_print_scores, save_metrics_csv
+from logicedu import get_logger, MNLIDataset, train, eval1, pretty_print_scores, save_metrics_csv, FALLACIES
 import argparse
 import pandas as pd
 import torch
+import os
 from library import eval_classwise, eval_and_store, convert_to_multilabel
 
 torch.manual_seed(0)
@@ -36,6 +37,10 @@ if __name__ == "__main__":
     parser.add_argument("-sl", "--save_labels", help="Save raw labels to this file")
     parser.add_argument("-ed", "--eval_dataset", help="Dataset to use when running evals. Can be \"train\", \"dev\", or \"test\".",
                         default="test")
+    parser.add_argument("-bf", "--by_fallacy", help="Set to true to separate evals by fallacy", default="F")
+    parser.add_argument("-esf", "--early_stopping_ft", help="When finetuning, stop when an epoch is worse than the previous",
+                        default="T")
+    parser.add_argument("-nef", "--num_epochs_ft", help="Number of epochs when finetuning", default="10")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -61,8 +66,9 @@ if __name__ == "__main__":
 
     if args.finetune == 'T':
         logger.info("starting training")
-        train(model, fallacy_ds, optimizer, logger, args.savepath, device, ratio=1, epochs=100,
-              positive_weight=float(args.weight) if args.weight is not None else None)
+        train(model, fallacy_ds, optimizer, logger, args.savepath, device, ratio=1, epochs=int(args.num_epochs_ft),
+              positive_weight=float(args.weight) if args.weight is not None else None,
+              early_stopping=args.early_stopping_ft == "T")
 
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath, num_labels=3)
         model.to(device)
@@ -74,11 +80,18 @@ if __name__ == "__main__":
                    threshold_max=float(args.threshold_max),
                    threshold_step=float(args.threshold_step),
                    predictions_filename=args.save_predictions,
-                   labels_filename=args.save_labels)
+                   labels_filename=args.save_labels,
+                   by_fallacy=args.by_fallacy == "T")
     #logger.info("micro f1: %f macro f1:%f precision: %f recall: %f exact match %f", scores[4], scores[5], scores[1],
     #            scores[2], scores[3])
-    pretty_print_scores(scores)
-    save_metrics_csv(scores, args.metrics_path)
+    if args.by_fallacy == "T":
+        for fallacy in FALLACIES:
+            print(fallacy)
+            pretty_print_scores(scores[fallacy])
+            save_metrics_csv(scores[fallacy], os.path.join(args.metrics_path, fallacy.replace(" ", "_") + ".csv"))
+    else:
+        pretty_print_scores(scores)
+        save_metrics_csv(scores, args.metrics_path)
 
     if args.classwise_savepath is not None:
         classwise_scores = eval_classwise(model, test_loader, logger, fallacy_ds.unique_labels, device)

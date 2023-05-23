@@ -1,7 +1,7 @@
 [
     {
         "module_name": "logicedu.py",
-        "title": "Electra-Small eval'd on Logic dataset",
+        "title": "Electra-Small training on Logic dataset",
         "name": "electra-small-on-logic",
         "threshold_testing_args": {
             "--model": "../../saved_models/electra-small-mnli/",
@@ -17,7 +17,7 @@
     },
     {
         "module_name": "logicedu.py",
-        "title": "Electra-Small-StructAware eval'd on Logic dataset",
+        "title": "Electra-Small-StructAware training on Logic dataset",
         "name": "electra-small-structaware-on-logic",
         "threshold_testing_args": {
             "--model": "../../saved_models/electra-small-mnli/",

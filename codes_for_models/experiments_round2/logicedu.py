@@ -322,7 +322,8 @@ def get_metrics(logits, labels, threshold=0.5, sig=True, tensors=True, pr_averag
             "accuracy": float(accuracy)}
 
 
-def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=0.04, positive_weight=12, debug=False):
+def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=0.04, positive_weight=12, debug=False,
+          early_stopping=True):
     train_loader, val_loader, _ = dataset.get_data_loaders()
     min_val_loss = float('inf')
     loss_fn = nn.CrossEntropyLoss(reduction='none')
@@ -422,7 +423,7 @@ def train(model, dataset, optimizer, logger, save_path, device, epochs=5, ratio=
             f'val_rec: {val_rec:.4f}'
         )
         logger.info("{:0>2}:{:0>2}:{:05.2f}".format(int(hours), int(minutes), seconds))
-        if not flag:
+        if early_stopping and not flag:
             break
 
 
@@ -545,6 +546,12 @@ if __name__ == "__main__":
     parser.add_argument("-ed", "--eval_dataset", help="Dataset to use when running evals. Can be \"train\", \"dev\", or \"test\".",
                         default="test")
     parser.add_argument("-bf", "--by_fallacy", help="Set to true to separate evals by fallacy", default="F")
+    parser.add_argument("-es", "--early_stopping", help="When training (not finetuning), stop when an epoch is worse than the previous",
+                        default="T")
+    parser.add_argument("-ne", "--num_epochs", help="Number of epochs when training (not finetuning)", default="10")
+    parser.add_argument("-esf", "--early_stopping_ft", help="When finetuning, stop when an epoch is worse than the previous",
+                        default="T")
+    parser.add_argument("-nef", "--num_epochs_ft", help="Number of epochs when finetuning", default="10")
     args = parser.parse_args()
     # word_bank = pickle.load('../../data/word_bank.pkl')
     logger.info(args)
@@ -571,7 +578,8 @@ if __name__ == "__main__":
         mnli_ds = MNLIDataset(args.tokenizer, mnli_train, mnli_dev, 'gold_label', fallacy=False)
         logger.info("finetune on mnli")
         optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
-        train(model, mnli_ds, optimizer, logger, args.savepath2, ratio=1, epochs=10, positive_weight=1)
+        train(model, mnli_ds, optimizer, logger, args.savepath2, ratio=1, epochs=int(args.num_epochs_ft), positive_weight=1,
+              early_stopping=args.early_stopping_ft == "T")
         logger.info("reinit model")
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath2)
         model.to(device)
@@ -595,8 +603,9 @@ if __name__ == "__main__":
     if args.do_not_train == 'F':
         optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
         logger.info("starting training")
-        train(model, fallacy_ds, optimizer, logger, args.savepath, device, ratio=1, epochs=10,
-              positive_weight=int(args.weight) if args.weight is not None else None)
+        train(model, fallacy_ds, optimizer, logger, args.savepath, device, ratio=1, epochs=int(args.num_epochs),
+              positive_weight=int(args.weight) if args.weight is not None else None,
+              early_stopping=args.early_stopping == "T")
 
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath, num_labels=3)
         model.to(device)
