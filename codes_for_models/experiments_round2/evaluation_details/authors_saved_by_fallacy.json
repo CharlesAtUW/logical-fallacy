@@ -5,14 +5,18 @@
         "name": "electra-on-logic-by-fallacy",
         "calibration": {"num_buckets": 10},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "T",
-        "by_fallacy_arg": "T"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T",
+            "--by_fallacy": "T"
+        },
+        "split_by_fallacy": true
     },
     {
         "module_name": "logicedu.py",
@@ -20,14 +24,18 @@
         "name": "electra-structaware-on-logic-by-fallacy",
         "calibration": {"num_buckets": 10},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "T",
-        "by_fallacy_arg": "T",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T",
+            "--by_fallacy": "T"
+        },
+        "split_by_fallacy": true,
         "additional_points": {
             "appeal to emotion": [{"micro_f1_score": 0.5000, "precision": 0.4800, "recall": 0.5217}],
             "false causality": [{"micro_f1_score": 0.5882, "precision": 0.6250, "recall": 0.5556}],

@@ -3,26 +3,32 @@
         "module_name": "logicedu.py",
         "title": "Electra-Small eval'd on Logic dataset",
         "name": "electra-small-on-logic",
-        "model_location": "../../saved_models/electra-small-mnli/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "F",
-        "savepath_arg": "../../saved_models/electra-small-logic"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-mnli/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "F",
+            "--savepath": "../../saved_models/electra-small-logic"
+        }
     },
     {
         "module_name": "logicedu.py",
         "title": "Electra-Small-StructAware eval'd on Logic dataset",
         "name": "electra-small-structaware-on-logic",
-        "model_location": "../../saved_models/electra-small-mnli/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "F",
-        "savepath_arg": "../../saved_models/electra-small-logic-structaware"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-mnli/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "F",
+            "--savepath": "../../saved_models/electra-small-logic-structaware"
+        }
     }
 ]

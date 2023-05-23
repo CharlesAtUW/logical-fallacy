@@ -5,13 +5,16 @@
         "name": "erics-on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/erics-retrained/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "T"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/erics-retrained/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T"
+        }
     },
     {
         "module_name": "logicclimate.py",
@@ -19,11 +22,14 @@
         "name": "erics-on-logicclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/erics-retrained/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/erics-retrained/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01"
+        }
     }
 ]

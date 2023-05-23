@@ -55,7 +55,7 @@ def do_threshold_graphing(eval_details_filename: str):
         eval_name = ed["name"]
         title = ed["title"]
 
-        if ed.get("by_fallacy_arg", "F") == "T":
+        if ed.get("split_by_fallacy", False):
             for fallacy in FALLACIES:
                 converted_fallacy = fallacy_to_name_in_files(fallacy)
                 metrics = pd.read_csv(filename_util.metrics_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True))

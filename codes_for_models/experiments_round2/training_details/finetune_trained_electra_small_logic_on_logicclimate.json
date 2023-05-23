@@ -3,26 +3,32 @@
         "module_name": "logicclimate.py",
         "title": "Electra-Small (finetuned on LogicClimate) eval'd on LogicClimate dataset",
         "name": "electra-small-ftolc-on-logicclimate",
-        "model_location": "../../saved_models/electra-small-logic/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "finetune_arg": "T",
-        "savepath_arg": "../../saved_models/electra-small-logicclimate"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-logic/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetune": "T",
+            "--savepath": "../../saved_models/electra-small-logicclimate"
+        }
     },
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small-StructAware (finetuned on LogicClimate) eval'd on LogicClimate dataset",
         "name": "electra-small-structaware-ftolc-on-logicclimate",
-        "model_location": "../../saved_models/electra-small-logic-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "finetune_arg": "T",
-        "savepath_arg": "../../saved_models/electra-small-logicclimate-structaware/"
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-small-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetune": "T",
+            "--savepath": "../../saved_models/electra-small-logicclimate-structaware/"
+        }
     }
 ]

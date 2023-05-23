@@ -5,14 +5,17 @@
         "name": "electra-structaware-on-logic-train",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "T",
-        "eval_dataset_arg": "train",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T",
+            "--eval_dataset": "train"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.5877,
@@ -28,14 +31,17 @@
         "name": "electra-structaware-ftolc-on-logicclimate-train",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logicclimate-structaware/",
-        "strategy": "3",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "finetuned_model_arg": "T",
-        "eval_dataset_arg": "train",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate-structaware/",
+            "--train_strat": "3",
+            "--dev_strat": "3",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetuned_model": "T",
+            "--eval_dataset": "train"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2937,
@@ -50,14 +56,17 @@
         "name": "electra-structaware-ftolc-on-logicclimate-train-precise",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0.306, 0.338]},
-        "model_location": "../../saved_models/electra-logicclimate-structaware/",
-        "strategy": "3",
-        "map": "masked-logical-form",
-        "threshold_min": "0.306",
-        "threshold_max": "0.338",
-        "threshold_step": "0.0005",
-        "finetuned_model_arg": "T",
-        "eval_dataset_arg": "train",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate-structaware/",
+            "--train_strat": "3",
+            "--dev_strat": "3",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.306",
+            "--threshold_max": "0.338",
+            "--threshold_step": "0.0005",
+            "--finetuned_model": "T",
+            "--eval_dataset": "train"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2937,

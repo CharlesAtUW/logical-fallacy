@@ -5,13 +5,16 @@
         "name": "electra-on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "T",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.5331,
@@ -27,13 +30,16 @@
         "name": "electra-structaware-on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "do_not_train_arg": "T",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.5877,
@@ -49,12 +55,15 @@
         "name": "electra-on-logicclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2272,
@@ -69,12 +78,15 @@
         "name": "electra-structaware-on-logicclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logic-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logic-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2723,
@@ -89,13 +101,16 @@
         "name": "electra-ftolc-on-logicclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logicclimate/",
-        "strategy": "1",
-        "map": "base",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "finetuned_model_arg": "T",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate/",
+            "--train_strat": "1",
+            "--dev_strat": "1",
+            "--map": "base",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetuned_model": "T"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2371,
@@ -110,13 +125,16 @@
         "name": "electra-structaware-ftolc-on-logicclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
-        "model_location": "../../saved_models/electra-logicclimate-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.01",
-        "threshold_max": "1",
-        "threshold_step": "0.01",
-        "finetuned_model_arg": "T",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--finetuned_model": "T"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2937,
@@ -131,13 +149,16 @@
         "name": "electra-structaware-ftolc-on-logicclimate-precise",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0.306, 0.338]},
-        "model_location": "../../saved_models/electra-logicclimate-structaware/",
-        "strategy": "2",
-        "map": "masked-logical-form",
-        "threshold_min": "0.306",
-        "threshold_max": "0.338",
-        "threshold_step": "0.0005",
-        "finetuned_model_arg": "T",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-logicclimate-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.306",
+            "--threshold_max": "0.338",
+            "--threshold_step": "0.0005",
+            "--finetuned_model": "T"
+        },
         "additional_points": [
             {
                 "micro_f1_score": 0.2937,

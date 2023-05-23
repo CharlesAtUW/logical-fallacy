@@ -6,45 +6,30 @@ import sys
 DEFAULT_EVAL_DETAILS_FILENAME = "evaluation_details/authors_saved.json"
 
 def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
-        print(f"evaluating model at {details['model_location']} on module {details['module_name']}:")
-        name = details["name"]
-        print(name)
+     print(f"evaluating model at {details['threshold_testing_args']['--model']} on module {details['module_name']}:")
+     name = details["name"]
+     print(name)
 
-        metrics_save_name = filename_util.metrics_fn(name)
-        command_args = ["python",
-                        details["module_name"],
-                        "-t", "google/electra-large-discriminator",
-                        "-m", details["model_location"],
-                        "-ts", details["strategy"],
-                        "-ds", details["strategy"],
-                        "-mp", details["map"],
-                        "-tmin", details["threshold_min"],
-                        "-tmax", details["threshold_max"],
-                        "-tstep", details["threshold_step"],
-                        "-sp", filename_util.raw_pred_fn(name),
-                        "-sl", filename_util.labels_fn(name)]
-        if "do_not_train_arg" in details:
-             command_args += ["-nt", details["do_not_train_arg"]]
-        if "finetune_arg" in details:
-             command_args += ["-f", details["finetune_arg"]]
-        if "finetuned_model_arg" in details:
-             command_args += ["-fm", details["finetuned_model_arg"]]
-        if "eval_dataset_arg" in details:
-             command_args += ["-ed", details["eval_dataset_arg"]]
-        if "by_fallacy_arg" in details:
-             command_args += ["-bf", details["by_fallacy_arg"]]
-             if details["by_fallacy_arg"] == "T":
-                  metrics_save_name = filename_util.metrics_by_fallacy_dn(name)
-        if "savepath_arg" in details:
-             command_args += ["-s", details["savepath_arg"]]
-        command_args += ["-sm", metrics_save_name]
+     metrics_save_name = filename_util.metrics_fn(name)
+     command_args = ["python",
+                    details["module_name"],
+                    "--tokenizer", "google/electra-large-discriminator",
+                    "--save_predictions", filename_util.raw_pred_fn(name),
+                    "--save_labels", filename_util.labels_fn(name)]
+     
+     if "threshold_testing_args" in details:
+          for arg, value in details["threshold_testing_args"].items():
+               command_args += [arg, value]
 
-        completed_process = subprocess.run(command_args, capture_output=True)
+     if details.get("split_by_fallacy", False):
+        metrics_save_name = filename_util.metrics_by_fallacy_dn(name)
+     command_args += ["--metrics_path", metrics_save_name]
 
-        if print_stdout:
-            print(f"stdout:\n{completed_process.stdout.decode('utf-8')}")
-        if print_stderr:
-            print(f"stderr:\n{completed_process.stderr.decode('utf-8')}")
+     process = subprocess.Popen(command_args,
+                                stdout=None if print_stdout else subprocess.DEVNULL,
+                                stderr=None if print_stderr else subprocess.DEVNULL,
+                                shell=False)
+     process.communicate()
 
 
 def do_threshold_testing(eval_details_filename: str):

@@ -29,7 +29,7 @@ def do_calibration_graphing(eval_details_filename: str):
         labels_filename = filename_util.labels_fn(eval_name)
         num_buckets = ed["calibration"]["num_buckets"]
 
-        if ed.get("by_fallacy_arg", "F") == "T":
+        if ed.get("split_by_fallacy", False):
             for i, fallacy in enumerate(FALLACIES):
                 converted_fallacy = fallacy_to_name_in_files(fallacy)
                 plot_calibration_curve(get_usable_tensor(predictions_filename, column=i),
