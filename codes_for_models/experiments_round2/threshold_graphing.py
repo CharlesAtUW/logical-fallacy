@@ -53,21 +53,22 @@ def do_threshold_graphing(eval_details_filename: str):
 
     for ed in all_eval_details:
         eval_name = ed["name"]
+        dir_details = ed["dir_details"]
         title = ed["title"]
 
         if ed.get("split_by_fallacy", False):
             for fallacy in FALLACIES:
                 converted_fallacy = fallacy_to_name_in_files(fallacy)
-                metrics = pd.read_csv(filename_util.metrics_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True))
+                metrics = pd.read_csv(filename_util.metrics_by_fallacy_fname(dir_details, eval_name, converted_fallacy, create_dirs=True))
                 graph_precision_recall_curve(metrics,
                                              ed.get("additional_points", {}).get(fallacy, []),
-                                             filename_util.plots_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True),
+                                             filename_util.plots_by_fallacy_fname(dir_details, eval_name, converted_fallacy, create_dirs=True),
                                              add_fallacy_to_title(title, fallacy))
         else:
-            metrics = pd.read_csv(filename_util.metrics_fn(eval_name))
+            metrics = pd.read_csv(filename_util.metrics_fname(dir_details, eval_name))
             graph_precision_recall_curve(metrics,
                                          ed.get("additional_points", []),
-                                         filename_util.plots_fn(eval_name),
+                                         filename_util.plots_fname(dir_details, eval_name),
                                          title)
 
 

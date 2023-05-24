@@ -2,15 +2,11 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small finetuning on LogicClimate dataset",
-        "name": "electra-small-ftolc-on-logicclimate",
         "threshold_testing_args": {
             "--model": "../../saved_models/electra-small-logic/",
             "--train_strat": "1",
             "--dev_strat": "1",
             "--map": "base",
-            "--threshold_min": "0.01",
-            "--threshold_max": "1",
-            "--threshold_step": "0.01",
             "--finetune": "T",
             "--savepath": "../../saved_models/electra-small-logicclimate"
         }
@@ -18,15 +14,11 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small-StructAware finetuning on LogicClimate dataset",
-        "name": "electra-small-structaware-ftolc-on-logicclimate",
         "threshold_testing_args": {
             "--model": "../../saved_models/electra-small-logic-structaware/",
             "--train_strat": "2",
             "--dev_strat": "2",
             "--map": "masked-logical-form",
-            "--threshold_min": "0.01",
-            "--threshold_max": "1",
-            "--threshold_step": "0.01",
             "--finetune": "T",
             "--savepath": "../../saved_models/electra-small-logicclimate-structaware/"
         }

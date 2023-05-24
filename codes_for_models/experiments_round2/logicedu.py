@@ -537,7 +537,8 @@ if __name__ == "__main__":
     parser.add_argument("-sr", "--result_path", help="Path to store results on dev set")
     parser.add_argument("-nt", "--do_not_train", help="Set this to T if you do not wish to train the model",
                         default='F')
-    parser.add_argument("-sm", "--metrics_path", help="Path to store metrics on test set. Directory name if -bf is \"T\", filename otherwise")
+    parser.add_argument("-sm", "--metrics_path", help="Path to store metrics on test set. Directory name if -bf is \"T\", filename otherwise. "
+                        "If not given, evals won't be performed.")
     parser.add_argument("-tmin", "--threshold_min", help="Minimum threshold to try on evals")
     parser.add_argument("-tmax", "--threshold_max", help="Maximum threshold (excluded) to try on evals")
     parser.add_argument("-tstep", "--threshold_step", help="Increment thresholds by this value")
@@ -610,26 +611,27 @@ if __name__ == "__main__":
 
         model = AutoModelForSequenceClassification.from_pretrained(args.savepath, num_labels=3)
         model.to(device)
-    logger.info("starting testing")
-    test_loader = None
-    if make_dataset:
-        _, _, test_loader = fallacy_ds.get_data_loaders()
-    scores = eval1(model, test_loader, logger, device,
-                   threshold_min=float(args.threshold_min),
-                   threshold_max=float(args.threshold_max),
-                   threshold_step=float(args.threshold_step),
-                   predictions_filename=args.save_predictions,
-                   labels_filename=args.save_labels,
-                   by_fallacy=args.by_fallacy == "T",
-                   pr_averaging=args.precision_recall_averaging)
-    if args.by_fallacy == "T":
-        for fallacy in FALLACIES:
-            print(fallacy)
-            pretty_print_scores(scores[fallacy])
-            save_metrics_csv(scores[fallacy], os.path.join(args.metrics_path, fallacy.replace(" ", "_") + ".csv"))
-    else:
-        pretty_print_scores(scores)
-        save_metrics_csv(scores, args.metrics_path)
+    if args.metrics_path is not None:
+        logger.info("starting testing")
+        test_loader = None
+        if make_dataset:
+            _, _, test_loader = fallacy_ds.get_data_loaders()
+        scores = eval1(model, test_loader, logger, device,
+                    threshold_min=float(args.threshold_min),
+                    threshold_max=float(args.threshold_max),
+                    threshold_step=float(args.threshold_step),
+                    predictions_filename=args.save_predictions,
+                    labels_filename=args.save_labels,
+                    by_fallacy=args.by_fallacy == "T",
+                    pr_averaging=args.precision_recall_averaging)
+        if args.by_fallacy == "T":
+            for fallacy in FALLACIES:
+                print(fallacy)
+                pretty_print_scores(scores[fallacy])
+                save_metrics_csv(scores[fallacy], os.path.join(args.metrics_path, fallacy.replace(" ", "_") + ".csv"))
+        else:
+            pretty_print_scores(scores)
+            save_metrics_csv(scores, args.metrics_path)
 
     if args.classwise_savepath is not None:
         classwise_scores = eval_classwise(model, test_loader, logger, fallacy_ds.unique_labels, device)

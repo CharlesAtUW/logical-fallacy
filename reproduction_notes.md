@@ -21,6 +21,17 @@ By default, these scripts will use details in `evaluation_details/authors_saved.
   - `train_electra_small_mnli_on_logic.json`: pass this file in to train a fresh `electra-small-mnli` model on the Logic dataset. This training takes the best of 20 epochs instead of doing early stopping.
   - `finetune_trained_electra_small_logic_on_logicclimate.json`: pass this file in to finetune the models trained from `train_electra_small_mnli_on_logic.json`on the LogicClimate dataset.
   - `finetune_trained_electra_small_logic_on_logicclimate_20epochs.json`: pass this file in to finetune the models trained from `train_electra_small_mnli_on_logic.json` on the LogicClimate dataset. This finetuning takes the best of 20 epochs instead of doing early stopping.
+#### File/dirname abbreviations in `plots`, etc. folders
+- `authors_saved`: Uses the authors' saved models
+- `small`: Uses models retrained from `electra-small-mnli`
+- `eval_train_set`: Evaluation on training set instead of test set
+- `micro_avg`: Precisions and recalls calculated using "micro" averaging instead of "samples" averaging
+- `on-logic`: Evaluation on the Logic dataset 
+- `on-lclimate`: Evaluation on the LogicClimate dataset 
+- `saware`: Model evaluated is a StructAware model
+- `ftolc`: Model evaluated was **f**ine**t**uned **o**n the **L**ogic**C**limate dataset
+- `ts3`: "Training strategy 3", where the model was trained on both original ("Training strategy 1") articles and masked ("Training strategy 2") articles
+
 ### Obtaining saved models
 - `threshold_testing.py` uses the saved models that the original repository provides. In the `README.md` file in the `saved_models` folder, download the saved models from the link, put them in the `saved_models` folder, then `unzip` them. The folder names corresponding to the saved models shouldn't have any of the numbers that were in the zip file names (i.e., it should just be "electra-logic", etc.).
 - But, in the `codes_for_models/experiments_round2` folder, folders `raw_labels` and `raw_predictions` have been added, with the generated predictions along with labels used for evaluating the models. So, the saved models don't have to be downloaded if you're not doing re-evaluations of them.
@@ -34,3 +45,8 @@ To put the `electra-small-mnli` pretrained model in the correct place, run the `
   - By default, `logicedu.py` can't easily change threshold values (from the "threshold of 0.5") (since for each fallacy, the model outputs three numbers, and makes the classification based on which number is higheset). To be able to change threshold values, we subtract the "contradiction" output number from the "entailment" number. As a consequence, the "neutral" class no longer gets selected.
 - In the dataset used in `logicclimate.py`, for some reason, there is exactly one input sample that doesn't have 13 fallacies associated with it, but only 10. This causes an error to occur in the `eval1` function, so this one example is excluded in our testing. Also, there seems to be one blank "example" each in the train, dev, and test datasets (i.e., line 10 in `data/climate_test_mh.csv`: "`10,10,,[],`") that causes errors in `logicclimate.py`, so that example is also excluded in our testing.
 - A bug has been found where if you run `logicclimate.py` with a model already finetuned on the LogicClimate dataset (i.e. the `--finetune` flag unset/set to `F`), then the test set that the model gets evaluated on is the entire LogicClimate dataset (i.e., the train, dev, and test datasets). This repository has fixed this by adding the `--findtuned_model` flag to have already-finetuned models be evaluated on only the LogicClimate test dataset.
+
+### Convenience
+Two convenience scripts are in the `codes_for_models/experiments_round2` folder:
+- `all_training.py` properly obtains a fresh `electra-small-mnli` dataset, and makes/saves various trained versions of it to be used by `threshold_testing.py` (if "`evaluation_details/small_retrained.json`" or "`evaluation_details/small_20epochs_retrained.json`" is passed in as the command line argument (string)).
+- `all_evals_and_graphing.py` performs evaluations for all saved models concerned by files in `evaluation_details`, then plots precision/recall curves, etc. for each evaluation.

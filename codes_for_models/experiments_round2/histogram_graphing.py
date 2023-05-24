@@ -51,6 +51,7 @@ def do_histogram_graphing(eval_details_filename):
 
     for ed in all_eval_details:
         eval_name = ed["name"]
+        dir_details = ed["dir_details"]
         title = ed["title"]
         num_bins = ed["histogram"]["bins"]
         histogram_range = tuple(ed["histogram"]["range"])
@@ -58,17 +59,17 @@ def do_histogram_graphing(eval_details_filename):
         if ed.get("split_by_fallacy", False):
             for i, fallacy in enumerate(FALLACIES):
                 converted_fallacy = fallacy_to_name_in_files(fallacy)
-                plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(eval_name), column=i),
+                plot_histogram(get_usable_tensor(filename_util.raw_pred_fname(dir_details, eval_name), column=i),
                             num_bins,
                             histogram_range,
                             add_fallacy_to_title(title, fallacy),
-                            filename_util.histogram_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True))
+                            filename_util.histogram_by_fallacy_fname(dir_details, eval_name, converted_fallacy, create_dirs=True))
         else:
-            plot_histogram(get_usable_tensor(filename_util.raw_pred_fn(eval_name)),
+            plot_histogram(get_usable_tensor(filename_util.raw_pred_fname(dir_details, eval_name)),
                         num_bins,
                         histogram_range,
                         title,
-                        filename_util.histogram_fn(eval_name))
+                        filename_util.histogram_fname(dir_details, eval_name))
 
 
 if __name__ == "__main__":

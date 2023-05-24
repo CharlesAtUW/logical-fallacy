@@ -2,7 +2,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Eric's retrained model eval'd on Logic dataset",
-        "name": "erics-on-logic",
+        "dir_details": ["electra", "erics_retrained", "normal"],
+        "name": "on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -19,7 +20,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Eric's retrained model eval'd on LogicClimate dataset",
-        "name": "erics-on-logicclimate",
+        "dir_details": ["electra", "erics_retrained", "normal"],
+        "name": "on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {

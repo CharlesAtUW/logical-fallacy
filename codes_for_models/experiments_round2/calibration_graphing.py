@@ -25,8 +25,9 @@ def do_calibration_graphing(eval_details_filename: str):
 
     for ed in all_eval_details:
         eval_name = ed["name"]
-        predictions_filename = filename_util.raw_pred_fn(eval_name)
-        labels_filename = filename_util.labels_fn(eval_name)
+        dir_details = ed["dir_details"]
+        predictions_filename = filename_util.raw_pred_fname(dir_details, eval_name)
+        labels_filename = filename_util.labels_fname(dir_details, eval_name)
         num_buckets = ed["calibration"]["num_buckets"]
 
         if ed.get("split_by_fallacy", False):
@@ -34,12 +35,12 @@ def do_calibration_graphing(eval_details_filename: str):
                 converted_fallacy = fallacy_to_name_in_files(fallacy)
                 plot_calibration_curve(get_usable_tensor(predictions_filename, column=i),
                                     get_usable_tensor(labels_filename, column=i),
-                                    filename_util.calibration_by_fallacy_fn(eval_name, converted_fallacy, create_dirs=True),
+                                    filename_util.calibration_by_fallacy_fname(dir_details, eval_name, converted_fallacy, create_dirs=True),
                                     num_buckets)
         else:
             plot_calibration_curve(get_usable_tensor(predictions_filename),
                                 get_usable_tensor(labels_filename),
-                                filename_util.calibration_fn(eval_name),
+                                filename_util.calibration_fname(dir_details, eval_name),
                                 num_buckets)
 
 

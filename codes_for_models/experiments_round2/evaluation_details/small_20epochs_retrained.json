@@ -2,7 +2,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra-Small (20 epochs) eval'd on Logic dataset",
-        "name": "electra-small-20epochs-on-logic",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -27,7 +28,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra-Small-StructAware (20 epochs) eval'd on Logic dataset",
-        "name": "electra-small-structaware-20epochs-on-logic",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "saware-on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -52,7 +54,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small (20 epochs) eval'd on LogicClimate dataset",
-        "name": "electra-small-20epochs-on-logicclimate",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -75,7 +78,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small-StructAware (20 epochs) eval'd on LogicCliamte dataset",
-        "name": "electra-small-structaware-20epochs-on-logicclimate",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "saware-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -98,7 +102,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small (f.t.'d on LogicClimate) (20 ep.) eval'd on LogicClimate dataset",
-        "name": "electra-small-ftolc-20epochs-on-logicclimate",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "ftolc-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -122,7 +127,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small-StructAware (f.t'd on LogicClimate) (20 ep.) eval'd on LogicClimate dataset",
-        "name": "electra-small-structaware-ftolc-20epochs-on-logicclimate",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "saware-ftolc-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -146,7 +152,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Small-StructAware (f.t'd on L.Climate) (20 ep., ts3) eval'd on L.Climate dataset",
-        "name": "electra-small-structaware-ftolc-20epochs-ts3-on-logicclimate",
+        "dir_details": ["electra", "small", "best_of_20_epochs"],
+        "name": "saware-ftolc-ts3-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {

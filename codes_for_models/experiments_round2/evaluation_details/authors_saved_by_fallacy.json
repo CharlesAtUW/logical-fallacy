@@ -2,7 +2,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra eval'd on Logic dataset by fallacy",
-        "name": "electra-on-logic-by-fallacy",
+        "dir_details": ["electra", "authors_saved", "normal", "by_fallacy"],
+        "name": "on-logic",
         "calibration": {"num_buckets": 10},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -21,7 +22,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra-Structaware eval'd on Logic dataset by fallacy",
-        "name": "electra-structaware-on-logic-by-fallacy",
+        "dir_details": ["electra", "authors_saved", "normal", "by_fallacy"],
+        "name": "saware-on-logic",
         "calibration": {"num_buckets": 10},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -55,7 +57,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra eval'd on LogicClimate dataset by fallacy",
-        "name": "electra-on-logicclimate-by-fallacy",
+        "dir_details": ["electra", "authors_saved", "normal", "by_fallacy"],
+        "name": "on-lclimate",
         "calibration": {"num_buckets": 10},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {

@@ -7,22 +7,25 @@ DEFAULT_EVAL_DETAILS_FILENAME = "evaluation_details/authors_saved.json"
 
 def perform_evaluation(details: dict, print_stdout=True, print_stderr=False):
      print(f"evaluating model at {details['threshold_testing_args']['--model']} on module {details['module_name']}:")
-     name = details["name"]
-     print(name)
+     eval_title = details["title"]
+     eval_name = details["name"]
+     dir_details = details["dir_details"]
+     print(eval_title)
+     print(eval_name)
 
-     metrics_save_name = filename_util.metrics_fn(name)
+     metrics_save_name = filename_util.metrics_fname(dir_details, eval_name)
      command_args = ["python",
                     details["module_name"],
                     "--tokenizer", "google/electra-large-discriminator",
-                    "--save_predictions", filename_util.raw_pred_fn(name),
-                    "--save_labels", filename_util.labels_fn(name)]
+                    "--save_predictions", filename_util.raw_pred_fname(dir_details, eval_name),
+                    "--save_labels", filename_util.labels_fname(dir_details, eval_name)]
      
      if "threshold_testing_args" in details:
           for arg, value in details["threshold_testing_args"].items():
                command_args += [arg, value]
 
      if details.get("split_by_fallacy", False):
-        metrics_save_name = filename_util.metrics_by_fallacy_dn(name)
+        metrics_save_name = filename_util.metrics_by_fallacy_dname(dir_details, eval_name)
      command_args += ["--metrics_path", metrics_save_name]
 
      process = subprocess.Popen(command_args,

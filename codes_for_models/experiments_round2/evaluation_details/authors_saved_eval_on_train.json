@@ -2,7 +2,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra-Structaware eval'd on Logic train dataset",
-        "name": "electra-structaware-on-logic-train",
+        "dir_details": ["electra", "authors_saved", "eval_train_set"],
+        "name": "saware-on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -28,7 +29,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Structaware (finetuned on LogicClimate) eval'd on LogicClimate train dataset",
-        "name": "electra-structaware-ftolc-on-logicclimate-train",
+        "dir_details": ["electra", "authors_saved", "eval_train_set"],
+        "name": "saware-ftolc-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -53,7 +55,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Structaware (f.t.'d on LogicClimate) eval'd on LogicClimate train (more precision)",
-        "name": "electra-structaware-ftolc-on-logicclimate-train-precise",
+        "dir_details": ["electra", "authors_saved", "eval_train_set"],
+        "name": "saware-ftolc-on-lclimate-precise",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0.306, 0.338]},
         "threshold_testing_args": {

@@ -2,7 +2,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra eval'd on Logic dataset",
-        "name": "electra-on-logic",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -27,7 +28,8 @@
     {
         "module_name": "logicedu.py",
         "title": "Electra-Structaware eval'd on Logic dataset",
-        "name": "electra-structaware-on-logic",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "saware-on-logic",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -52,7 +54,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra eval'd on LogicClimate dataset",
-        "name": "electra-on-logicclimate",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -75,7 +78,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Structaware eval'd on LogicClimate dataset",
-        "name": "electra-structaware-on-logicclimate",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "saware-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -98,7 +102,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra (finetuned on LogicClimate) eval'd on LogicClimate dataset",
-        "name": "electra-ftolc-on-logicclimate",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "ftolc-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -122,7 +127,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Structaware (finetuned on LogicClimate) eval'd on LogicClimate dataset",
-        "name": "electra-structaware-ftolc-on-logicclimate",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "saware-ftolc-on-lclimate",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0, 1]},
         "threshold_testing_args": {
@@ -146,7 +152,8 @@
     {
         "module_name": "logicclimate.py",
         "title": "Electra-Structaware (finetuned on LogicClimate) eval'd on LogicClimate (more precision)",
-        "name": "electra-structaware-ftolc-on-logicclimate-precise",
+        "dir_details": ["electra", "authors_saved", "normal"],
+        "name": "saware-ftolc-on-lclimate-precise",
         "calibration": {"num_buckets": 20},
         "histogram": {"bins": 10, "range": [0.306, 0.338]},
         "threshold_testing_args": {
