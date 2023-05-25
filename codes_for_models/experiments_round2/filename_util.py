@@ -26,15 +26,15 @@ def labels_fname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT)
 
 
 def plots_fname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT):
-    return get_filename("plots", subdirs, name + ".png", create_dirs=create_dirs)
+    return get_filename("threshold_plots", subdirs, name + ".png", create_dirs=create_dirs)
 
 
 def plots_by_fallacy_fname(subdirs: List[str], name: str, fallacy: str, create_dirs=CREATE_DIRS_DEFAULT):
-    return get_filename("plots", subdirs + [name], fallacy + ".png", create_dirs=create_dirs)
+    return get_filename("threshold_plots", subdirs + [name], fallacy + ".png", create_dirs=create_dirs)
 
 
 def plots_by_fallacy_dname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT):
-    return get_filename("plots", subdirs, name, create_dirs=create_dirs)
+    return get_filename("threshold_plots", subdirs, name, create_dirs=create_dirs)
 
 
 def metrics_fname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT):
@@ -50,15 +50,15 @@ def metrics_by_fallacy_dname(subdirs: List[str], name: str, create_dirs=CREATE_D
 
 
 def histogram_fname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT):
-    return get_filename("distributions", subdirs, name + ".png", create_dirs=create_dirs)
+    return get_filename("distribution_histograms", subdirs, name + ".png", create_dirs=create_dirs)
 
 
 def histogram_by_fallacy_fname(subdirs: List[str], name: str, fallacy: str, create_dirs=CREATE_DIRS_DEFAULT):
-    return get_filename("distributions", subdirs + [name], fallacy + ".png", create_dirs=create_dirs)
+    return get_filename("distribution_histograms", subdirs + [name], fallacy + ".png", create_dirs=create_dirs)
 
 
 def histogram_by_fallacy_dname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT):
-    return get_filename("distributions", subdirs, name, create_dirs=create_dirs)
+    return get_filename("distribution_histograms", subdirs, name, create_dirs=create_dirs)
 
 
 def calibration_fname(subdirs: List[str], name: str, create_dirs=CREATE_DIRS_DEFAULT):
