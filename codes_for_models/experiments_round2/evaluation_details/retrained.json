@@ -1,0 +1,52 @@
+[
+    {
+        "module_name": "logicedu.py",
+        "title": "Retrained Electra-StructAware model eval'd on Logic dataset",
+        "dir_details": ["electra", "retrained", "early_stopping"],
+        "name": "saware-on-logic",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-retrained-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01",
+            "--do_not_train": "T"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.5877,
+                "precision": 0.5525,
+                "recall": 0.6367,
+                "exact_match": 0.4767
+            }
+        ]
+    },
+    {
+        "module_name": "logicclimate.py",
+        "title": "Retrained Electra-StructAware model eval'd on LogicClimate dataset",
+        "dir_details": ["electra", "retrained", "early_stopping"],
+        "name": "saware-on-lclimate",
+        "calibration": {"num_buckets": 20},
+        "histogram": {"bins": 10, "range": [0, 1]},
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-retrained-structaware/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--threshold_min": "0.01",
+            "--threshold_max": "1",
+            "--threshold_step": "0.01"
+        },
+        "additional_points": [
+            {
+                "micro_f1_score": 0.2723,
+                "precision": 0.2046,
+                "recall": 0.4512
+            }
+        ]
+    }
+]

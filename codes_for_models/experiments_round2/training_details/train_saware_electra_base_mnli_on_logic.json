@@ -1,0 +1,14 @@
+[
+    {
+        "module_name": "logicedu.py",
+        "title": "Retrained Electra-StructAware training on Logic dataset",
+        "threshold_testing_args": {
+            "--model": "../../saved_models/electra-base-mnli/",
+            "--train_strat": "2",
+            "--dev_strat": "2",
+            "--map": "masked-logical-form",
+            "--do_not_train": "F",
+            "--savepath": "../../saved_models/electra-retrained-structaware/"
+        }
+    }
+]

@@ -629,11 +629,11 @@ if __name__ == "__main__":
         for fallacy in FALLACIES:
             print(fallacy)
             pretty_print_scores(scores[fallacy])
-            if args.do_not_save_metrics == "T":
+            if args.do_not_save_metrics == "F":
                 save_metrics_csv(scores[fallacy], os.path.join(args.metrics_path, fallacy.replace(" ", "_") + ".csv"))
     else:
         pretty_print_scores(scores)
-        if args.do_not_save_metrics == "T":
+        if args.do_not_save_metrics == "F":
             save_metrics_csv(scores, args.metrics_path)
 
     if args.classwise_savepath is not None:

@@ -19,8 +19,9 @@ By default, these scripts (including `threshold_testing.py`) will use details in
   - `authors_saved_by_fallacy.json`: These will perform some of the evaluations from `authors_saved.json`, except splitting up the evaluations by fallacy.
   - `authors_saved_eval_on_train.json`: These will perform some of the evaluations from `authors_saved.json`, except evaluating on the respective training dataset instead of the test set.
   - `authors_saved_microavg.json`: These will perform the same evaluations as `authors_saved.json`, except precisions and recalls are calculated using "micro" averaging instead of "samples" averaging. See [here](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html) for more details about these averaging types.
-  - `small_retrained.json`: These will use the models retrained from `electra-small-mnli`. See the filenames `train_electra_small_mnli_on_logic.json` and `finetune_trained_electra_small_logic_on_logicclimate.json` under the `training_details/` bullet point for getting the retrained models.
-  - `small_20epochs_retrained.json`: These will use the models retrained from `electra-small-mnli` that took the best of 20 epochs instead of doing early stopping. See the filenames `train_electra_small_mnli_on_logic_20epochs.json` and `finetune_trained_electra_small_logic_on_logicclimate_20epochs.json` under the `training_details/` bullet point for getting the retrained models.
+  - `retrained.json`: This will use the model retrained from `electra-base-mnli`. See the filename `train_saware_electra_base_mnli_on_logic.json` under the `training_details/` bullet point (in "Retraining models") for getting this retrained model.
+  - `small_retrained.json`: These will use the models retrained from `electra-small-mnli`. See the filenames `train_electra_small_mnli_on_logic.json` and `finetune_trained_electra_small_logic_on_logicclimate.json` under the `training_details/` bullet point (in "Retraining models") for getting the retrained models.
+  - `small_20epochs_retrained.json`: These will use the models retrained from `electra-small-mnli` that took the best of 20 epochs instead of doing early stopping. See the filenames `train_electra_small_mnli_on_logic_20epochs.json` and `finetune_trained_electra_small_logic_on_logicclimate_20epochs.json` under the `training_details/` bullet point (in "Retraining models") for getting the retrained models.
 
 ## Retraining models
 The `model_training.py` script will perform some model (re)trainings based on what training details file you pass in (whose filename is passed in as the first command-line argument). The script's default training details file is `training_details/train_electra_small_mnli_on_logic.json`. Note that most of the functionality of `model_training.py` is from invoking and passing command line arguments into `logicedu.py`/`logicclimate.py`. These are some of the filenames that can be passed into `model_training.py`:
@@ -29,6 +30,9 @@ The `model_training.py` script will perform some model (re)trainings based on wh
   - `train_electra_small_mnli_on_logic_20epochs.json`: does the same training as `train_electra_small_mnli_on_logic.json`. Except, this training takes the best of 20 epochs instead of doing early stopping (taking the epoch before the first epoch where val loss doesn't decrease).
   - `finetune_trained_electra_small_logic_on_logicclimate.json`: pass this file in to finetune the models trained from `train_electra_small_mnli_on_logic.json`on the LogicClimate dataset.
   - `finetune_trained_electra_small_logic_on_logicclimate_20epochs.json`: does the same finetuning as `finetune_trained_electra_small_logic_on_logicclimate.json`. Except, this training takes the best of 20 epochs instead of doing early stopping (taking the epoch before the first epoch where val loss doesn't decrease).
+  - `train_saware_electra_base_mnli_on_logic.json`: pass this file in to do train a fresh pretrained `electra-base-mnli` model on the Logic dataset, particulary StructAware training.
+
+Note that models are not obtained automatically, and the steps to obtain fresh models to retrain on can be found in section "Obtaining pretrained models for retraining".
 
 ### Where/how results are stored
 The results of experiments are stored in various directories in `codes_for_models/experiments_round2`:
@@ -43,6 +47,7 @@ The results of experiments are stored in various directories in `codes_for_model
 The results in "Where/how results are stored" are organized into different subdirectories within these directories. These are some abbreviations on what certain directory names and parts of file names mean:
 - `authors_saved`: Uses the authors' saved models
 - `small`: Uses models retrained from `electra-small-mnli`
+- `retrained`: Uses models retrained from `electra-base-mnli`
 - `eval_train_set`: Evaluation on training set instead of test set
 - `micro_avg`: Precisions and recalls calculated using "micro" averaging instead of the default "samples" averaging
 - `on-logic`: Evaluation on the Logic dataset 
@@ -62,16 +67,19 @@ The models that can be used for retraining are `electra-small-mnli` (smaller) an
 In the `codes_for_models/experiments_round2` directory, the authors' `remove_content_words.py` will input a file name and mask out certain content words in sentences in that file, to get a more logical form of the sentence. Their script accepts a CSV filename, the name of the column in that CSV file containing the sentences, and the name of the model to be used for processing the sentences. Names of pretrained models that can be used can be found [here](https://www.sbert.net/docs/pretrained_models.html)
 
 ## Other notes
-- For each input sample into the model, and for each of the 13 fallacies, the model will classify if the sample has the fallacy ("entailment"), doesn't ("contradiction"), or neutral ("neutral"). None of the training examples used in `logicedu.py` have the "neutral" label for any fallacy.
+- For each input sample into the model, and for each of the 13 fallacies, the model will classify if the sample has the fallacy ("entailment"), doesn't ("contradiction"), or neutral ("neutral"). None of the examples used in `logicedu.py` have the "neutral" label for any fallacy.
   - This makes the model more like 13 binary classifiers instead of a multi-class classifier.
   - By default, `logicedu.py` can't easily change threshold values (from the "threshold of 0.5") (since for each fallacy, the model outputs three numbers, and makes the classification based on which number is higheset). To be able to change threshold values, we subtract the "contradiction" output number from the "entailment" number. As a consequence, the "neutral" class no longer gets selected.
+  - To make a situation where we can change the threshold, we subtract the "contradiction" number from the "entailment" number, then apply the sigmoid function to it. This is what we mean when we say "sigmoid output" elsewhere in this document.
+    - Note that a threshold of 0.5 corresponds to what the model does normally.
+    - Lower threshold values mean that a larger range of sigmoid outputs get classified as "entailment".
 - In the dataset used in `logicclimate.py`, for some reason, there is exactly one input sample that doesn't have 13 fallacies associated with it, but only 10. This causes an error to occur in the `eval1` function, so this one example is excluded in our testing. Also, there seems to be one blank "example" each in the train, dev, and test datasets (i.e., line 10 in `data/climate_test_mh.csv`: "`10,10,,[],`") that causes errors in `logicclimate.py`, so that example is also excluded in our testing.
 - A bug has been found where if you run `logicclimate.py` with a model already finetuned on the LogicClimate dataset (i.e. the `--finetune` flag unset/set to `F`), then the test set that the model gets evaluated on is the entire LogicClimate dataset (i.e., the train, dev, and test datasets). This repository has fixed this by adding the `--findtuned_model` flag to have already-finetuned models be evaluated on only the LogicClimate test dataset.
 
 ## Convenience
 Two convenience scripts are in the `codes_for_models/experiments_round2` folder:
-- `all_training.py` properly obtains a fresh pretrained `electra-small-mnli` dataset, and makes/saves various trained versions of it to be used by `threshold_testing.py` (if "`evaluation_details/small_retrained.json`" or "`evaluation_details/small_20epochs_retrained.json`" is passed in as the command line argument (string)).
-- `all_evals_and_graphing.py` performs evaluations for all saved models concerned by files in `evaluation_details`, then plots precision/recall curves, etc. for each evaluation.
+- `all_training.py` properly obtains a fresh pretrained `electra-small-mnli` model and `electra-base-mnli` model, and makes/saves various trained versions of it to be used by `threshold_testing.py` (it does all retraining concerned by files in the `codes_for_models/experiments_round2/training_details` directory). Note that running this may take a very long time.
+- `all_evals_and_graphing.py` performs evaluations for all saved models concerned by files in the `codes_for_models/experiments_round2/evaluation_details` directory, then plots and saves precision/recall curves, etc. for each evaluation.
 
 **To regenerate all saved predictions/labels, evaluation metrics, and plots**, first follow the steps in "Obtaining saved models", then run `all_training.py`, then run `all_evals_and_graphing.py`
 **To simply evaluate the authors' saved models (without thresholds)**, first follow the steps in "Obtaining saved models" (if not using the saved predictions/labels), then (in `codes_for_models/experiments_round2`) run `python threshold_testing.py evaluation_details/authors_saved.json T`.
